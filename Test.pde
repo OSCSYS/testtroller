@@ -141,7 +141,7 @@ void testOutputs(byte testNum, byte numTests) {
   printLCD_P(1, 6, PSTR("Valve"));
   for(byte valve = 0; valve < 32; valve++) {
     printLCDLPad(1, 12, itoa(valve + 1, buf, 10), 2, '0');
-    setValves(1<<valve);
+    setValves((unsigned long)1<<valve);
     delay(1000);
   }
   setValves(0);
