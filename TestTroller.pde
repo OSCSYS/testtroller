@@ -1,4 +1,4 @@
-#define BUILD 417 
+#define BUILD 561 
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jermeiah Dillingham
 
@@ -42,8 +42,8 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 // Use BTBOARD_3 for 3.0 boards
 //
 //#define BTBOARD_1
-#define BTBOARD_2.2
-//#define BTBOARD_3
+//#define BTBOARD_2.2
+#define BTBOARD_3
 //**********************************************************************************
 
 //**********************************************************************************

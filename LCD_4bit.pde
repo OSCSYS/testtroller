@@ -28,7 +28,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 */
 
 
-#include <LiquidCrystal.h>
+#include <LiquidCrystalFP.h>
 
 // LiquidCrystal display with:
 // rs on pin 17/18	  (LCD pin 4 ) aka DI

@@ -83,6 +83,12 @@ void testEncoder(byte testNum, byte numTests) {
   enterStatus = 0;
 }
 
+#if defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  #define EEPROM_BLOCK_SIZE 256
+#else
+  #define EEPROM_BLOCK_SIZE 128
+#endif
+
 void testEEPROM(byte testNum, byte numTests) {
   lcdSetCustChar_P(0, CHK);
   clearLCD();
@@ -92,15 +98,15 @@ void testEEPROM(byte testNum, byte numTests) {
   
   for (byte block = 0; block < 16; block++) {
     printLCD_P(1, block + 2, PSTR("W"));
-    for (byte pos = 0; pos < 128; pos++) EEPROM.write(block * 128 + pos, pos);
+    for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, pos);
     printLCD_P(1, block + 2, PSTR("V"));
     boolean failed = 0;
-    for (byte pos = 0; pos < 128; pos++) {
-      if (EEPROM.read(block * 128 + pos) != pos){
+    for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) {
+      if (EEPROM.read(block * EEPROM_BLOCK_SIZE + pos) != pos){
         failed = 1;
         break;
       }
-      EEPROM.write(block * 128 + pos, 0);
+      EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, 0);
     }
     if (failed) printLCD_P(1, block + 2, PSTR("X"));
     else lcdWriteCustChar(1, block + 2, 0);
