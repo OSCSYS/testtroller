@@ -4,16 +4,23 @@
 #include "Config.h"
 
 //Pin and Interrupt Definitions
-#define ENCA_PIN 2
-#define ENCB_PIN 4
+#ifdef BTBOARD_4
+  #define ENCA_PIN 2
+  #define ENCB_PIN 4
+  #define ENTER_PIN 5
+#else
+  #define ENCA_PIN 2
+  #define ENCB_PIN 4
+  #define ENTER_PIN 11
+  #define ENTER_INT 1
+  #define ENCA_INT 2
+#endif
+
 #ifndef BTBOARD_4
   #define TEMP_PIN 5
 #endif
 
-#define ENTER_PIN 11
 #define ALARM_PIN 15
-#define ENTER_INT 1
-#define ENCA_INT 2
 
 //P/V Ouput Defines
 #if defined BTBOARD_3 || defined BTBOARD_4
@@ -22,7 +29,6 @@
   #define MUX_DATA_PIN 14
   
   #ifdef BTBOARD_4
-    #define MUX_OE_PIN 5
     #define MUX_MR_PIN 6
   #else
     #define MUX_OE_PIN 10
@@ -69,8 +75,7 @@
   #define DIGIN2_PIN 20
   #define DIGIN3_PIN 19
   #define DIGIN4_PIN 18
-  #define DIGIN5_PIN 10
-  #define DIGIN6_PIN 22
+  #define DIGIN5_PIN 22
 #endif
 
 //Reverse pin swap on 2.x boards

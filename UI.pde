@@ -29,7 +29,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 
 #include "Config.h"
 #include "Enum.h"
-#include <encoder.h>
+#include <encoder2.h>
 #include <EEPROM.h>
 
 //*****************************************************************************************************************************
@@ -102,8 +102,12 @@ unsigned long lastRead;
 void uiInit() {
   initLCD();
   lcdSetCustChar_P(7, UNLOCK_ICON);
-  Encoder.begin(ENCA_PIN, ENCB_PIN, ENTER_PIN, ENTER_INT, ENCODER_TYPE);
-
+  #ifdef BTBOARD_4
+    Encoder.begin(ENCODER_TYPE, false, ENTER_PIN, ENCA_PIN, ENCB_PIN);
+  #else
+    Encoder.begin(ENCODER_TYPE, false, ENTER_PIN, ENCA_PIN, ENCB_PIN, ENTER_INT, ENCA_INT);
+  #endif
+  
   activeScreen = SCREEN_MIN;
   screenInit(activeScreen);
   unlockUI();
@@ -370,19 +374,19 @@ void screenRefresh(byte screen) {
     }
   } else if (screen == SCREEN_VOLUME) {
     if (millis() - lastRead > 500) {
-      int v = 50 * analogRead(HLTVOL_APIN) / 1024 ;
+      unsigned int v = 50 * (unsigned int) analogRead(HLTVOL_APIN) / 1024 ;
       vftoa(v, buf, 1);
       printLCDLPad(0, 4, buf, 3, ' ');
       
-      v = 50 * analogRead(MASHVOL_APIN) / 1024 ;
+      v = 50 * (unsigned int) analogRead(MASHVOL_APIN) / 1024 ;
       vftoa(v, buf, 1);
       printLCDLPad(1, 5, buf, 3, ' ');
       
-      v = 50 * analogRead(KETTLEVOL_APIN) / 1024 ;
+      v = 50 * (unsigned int) analogRead(KETTLEVOL_APIN) / 1024 ;
       vftoa(v, buf, 1);
       printLCDLPad(0, 16, buf, 3, ' ');
       
-      v = 50 * analogRead(STEAMPRESS_APIN) / 1024 ;
+      v = 50 * (unsigned int) analogRead(STEAMPRESS_APIN) / 1024 ;
       vftoa(v, buf, 1);
       printLCDLPad(1, 16, buf, 3, ' ');
       lastRead = millis();

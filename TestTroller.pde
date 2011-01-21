@@ -36,6 +36,8 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #include "Config.h"
 #include "Enum.h"
 #include <pin.h>
+#include <PinChangeInt.h>
+#include <PinChangeIntConfig.h>
 
 //**********************************************************************************
 // Compile Time Logic
@@ -95,9 +97,11 @@ pin heatPin[4], alarmPin;
 #endif
 
 #if MUXBOARDS > 0
-  pin muxLatchPin, muxDataPin, muxClockPin, muxOEPin;
+  pin muxLatchPin, muxDataPin, muxClockPin;
   #ifdef BTBOARD_4
     pin muxMRPin;
+  #else
+    pin muxOEPin;
   #endif
 #endif
 
