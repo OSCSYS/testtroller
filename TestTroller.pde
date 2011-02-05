@@ -1,4 +1,4 @@
-#define BUILD 641
+#define BUILD 664
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jermeiah Dillingham
 
@@ -36,8 +36,6 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #include "Config.h"
 #include "Enum.h"
 #include <pin.h>
-#include <PinChangeInt.h>
-#include <PinChangeIntConfig.h>
 
 //**********************************************************************************
 // Compile Time Logic
@@ -121,6 +119,8 @@ const char BT[] PROGMEM = "TestTroller";
 const char BTVER[] PROGMEM = "2.0";
 
 
+boolean triggers[5];
+
 //**********************************************************************************
 // Setup
 //**********************************************************************************
@@ -132,6 +132,9 @@ void setup() {
   
   //Pin initialization (Outputs.pde)
   pinInit();
+  
+  //Digital Input Initialization (Events.pde)
+  trigInit();
   
   tempInit();
   

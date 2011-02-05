@@ -29,7 +29,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 
 #include "Config.h"
 #include "Enum.h"
-#include <encoder2.h>
+#include <encoder.h>
 #include <EEPROM.h>
 
 //*****************************************************************************************************************************
@@ -62,7 +62,8 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #define SCREEN_VOLUME 4
 #define SCREEN_TIMER 5
 #define SCREEN_MANUALPV 6
-#define SCREEN_COMPLETE 7
+#define SCREEN_TRIGGERS 7
+#define SCREEN_COMPLETE 8
 
 #define SCREEN_MIN SCREEN_LCD
 #define SCREEN_MAX SCREEN_COMPLETE
@@ -103,9 +104,9 @@ void uiInit() {
   initLCD();
   lcdSetCustChar_P(7, UNLOCK_ICON);
   #ifdef BTBOARD_4
-    Encoder.begin(ENCODER_TYPE, false, ENTER_PIN, ENCA_PIN, ENCB_PIN);
+    Encoder.begin(ENCODER_TYPE, ENTER_PIN, ENCA_PIN, ENCB_PIN);
   #else
-    Encoder.begin(ENCODER_TYPE, false, ENTER_PIN, ENCA_PIN, ENCB_PIN, ENTER_INT, ENCA_INT);
+    Encoder.begin(ENCODER_TYPE, ENTER_PIN, ENCA_PIN, ENCB_PIN, ENTER_INT, ENCA_INT);
   #endif
   
   activeScreen = SCREEN_MIN;
@@ -349,6 +350,16 @@ void screenInit(byte screen) {
         updateLCD();
       }  
     }
+  } else if (screen == SCREEN_TRIGGERS) {
+    printLCD_P(3, 0, PSTR("Test   /  : Triggers"));
+    printLCDLPad(3, 5, itoa(screen + 1, buf, 10), 2, '0');
+    printLCDLPad(3, 8, itoa(SCREEN_MAX, buf, 10), 2, '0');
+    printLCD_P(0, 0, PSTR("1: WAIT"));
+    printLCD_P(0, 10, PSTR("2: WAIT"));
+    printLCD_P(1, 0, PSTR("3: WAIT"));
+    printLCD_P(1, 10, PSTR("4: WAIT"));
+    printLCD_P(2, 0, PSTR("E-Stop: WAIT"));
+    for (byte i = 0; i < 5; i++) { triggers[i] = 0; }
   } else if (screen == SCREEN_COMPLETE) {
     printLCD_P(3, 0, PSTR("Tests Complete."));
   }
@@ -395,6 +406,12 @@ void screenRefresh(byte screen) {
     
   } else if (screen == SCREEN_MANUALPV) {
     
+  } else if (screen == SCREEN_TRIGGERS) {
+    if(triggers[0]) printLCD_P(0, 3, PSTR("TRIG"));
+    if(triggers[1]) printLCD_P(0, 13, PSTR("TRIG"));
+    if(triggers[2]) printLCD_P(1, 3, PSTR("TRIG"));
+    if(triggers[3]) printLCD_P(1, 13, PSTR("TRIG"));
+    if(triggers[4]) printLCD_P(2, 8, PSTR("TRIG"));
   } else if (screen == SCREEN_COMPLETE) {
   }
 }
@@ -429,6 +446,9 @@ void screenEnter(byte screen) {
         activeScreen = SCREEN_MANUALPV;
         screenInit(activeScreen);
       } else if (screen == SCREEN_MANUALPV) {
+      } else if (screen == SCREEN_TRIGGERS) {        
+        activeScreen = SCREEN_COMPLETE;
+        screenInit(activeScreen);
       } else if (screen == SCREEN_COMPLETE) {
         unlockUI();
       }

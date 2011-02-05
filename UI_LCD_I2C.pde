@@ -38,7 +38,8 @@ byte screen[80];
 
 void initLCD(){
   Wire.begin();
-  i2cSetContrast(128);
+  i2cSetContrast(0);
+  i2cSetBright(255);
   i2cLcdBegin(20, 4);
 }
 
