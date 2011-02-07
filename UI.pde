@@ -453,14 +453,13 @@ void screenEnter(byte screen) {
     if (!screenLock) lockUI();
     else {
       if (screen == SCREEN_HOME) {
-        menu *homeMenu;
-        homeMenu->begin(3, 19, 2);
-        homeMenu->addItem("Cancel", 0);
+        menu homeMenu;
+        homeMenu.begin(3, 19, 2);
+        homeMenu.addItem("Cancel", 0);
         #ifdef UI_LCD_I2C
-          homeMenu->addItem("LCD Adjust", 1);
+          homeMenu.addItem("LCD Adjust", 1);
         #endif
-        homeMenu->setRows(3);
-        byte val = scrollMenu("Main Menu", homeMenu);
+        byte val = scrollMenu("Main Menu", &homeMenu);
         #ifdef UI_LCD_I2C
           if (val == 1) adjustLCD();
         #endif
@@ -621,7 +620,7 @@ void drawMenu(char sTitle[], menu *objMenu) {
   if (sTitle != NULL) printLCD(0, 0, sTitle);
 
   for (byte i = 0; i < 3; i++) {
-    objMenu->getRow(i, buf);
+    objMenu->getVisibleRow(i, buf);
     printLCD(i + 1, 1, buf);
   }
   printLCD(objMenu->getCursor() + 1, 0, ">");
