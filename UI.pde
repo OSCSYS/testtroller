@@ -454,11 +454,12 @@ void screenEnter(byte screen) {
     else {
       if (screen == SCREEN_HOME) {
         menu *homeMenu;
-        homeMenu->begin(3, 19, 4);
+        homeMenu->begin(3, 19, 2);
         homeMenu->addItem("Cancel", 0);
         #ifdef UI_LCD_I2C
           homeMenu->addItem("LCD Adjust", 1);
         #endif
+        homeMenu->setRows(3);
         byte val = scrollMenu("Main Menu", homeMenu);
         #ifdef UI_LCD_I2C
           if (val == 1) adjustLCD();
@@ -592,11 +593,9 @@ void screenEnter(byte screen) {
 byte scrollMenu(char sTitle[], menu *objMenu) {
   Encoder.setMin(0);
   Encoder.setMax(objMenu->getItemCount() - 1);
-  objMenu->refreshDisp();
-  //Odd bug: _topItem = 1 after first refreshDisp() call; second call resolves
+  //Force refresh in case selected value was set
   objMenu->refreshDisp();
   Encoder.setCount(objMenu->getCursor());
-  //Force refresh in case selected value was set
   drawMenu(sTitle, objMenu);
   
   while(1) {
