@@ -1,4 +1,4 @@
-#define BUILD 665
+#define BUILD 668
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jermeiah Dillingham
 
@@ -36,6 +36,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #include "Config.h"
 #include "Enum.h"
 #include <pin.h>
+#include <menu.h>
 
 //**********************************************************************************
 // Compile Time Logic
@@ -68,6 +69,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 //Use I2C LCD for BTBoard_4
 #ifdef BTBOARD_4
   #define UI_LCD_I2C
+  #define HEARTBEAT
 #endif
 
 //Select OneWire Comm Type
@@ -105,13 +107,14 @@ pin heatPin[4], alarmPin;
 
 #ifdef BTBOARD_4
   pin digInPin[6];
+  pin hbPin;
 #endif
 
 //Volume Sensor Pin Array
 byte vSensor[3] = { HLTVOL_APIN, MASHVOL_APIN, KETTLEVOL_APIN};
 
 //Shared buffers
-char menuopts[21][20], buf[20];
+char buf[20];
 
 unsigned long vlvBits;
 
@@ -158,5 +161,16 @@ void loop() {
 }
 
 void brewCore() {
-    updateLCD();
+  #ifdef HEARTBEAT
+    heartbeat();
+  #endif
+  updateLCD();
+}
+
+unsigned long hbStart = 0;
+void heartbeat() {
+  if (millis() - hbStart > 750) {
+    hbPin.toggle();
+    hbStart = millis();
+  }
 }

@@ -55,17 +55,18 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 //**********************************************************************************
 // UI Definitions
 //**********************************************************************************
-#define SCREEN_LCD 0
-#define SCREEN_EEPROM 1
-#define SCREEN_OUTPUTS 2
-#define SCREEN_ONEWIRE 3
-#define SCREEN_VOLUME 4
-#define SCREEN_TIMER 5
-#define SCREEN_MANUALPV 6
-#define SCREEN_TRIGGERS 7
-#define SCREEN_COMPLETE 8
+#define SCREEN_HOME 0
+#define SCREEN_LCD 1
+#define SCREEN_EEPROM 2
+#define SCREEN_OUTPUTS 3
+#define SCREEN_ONEWIRE 4
+#define SCREEN_VOLUME 5
+#define SCREEN_TIMER 6
+#define SCREEN_MANUALPV 7
+#define SCREEN_TRIGGERS 8
+#define SCREEN_COMPLETE 9
 
-#define SCREEN_MIN SCREEN_LCD
+#define SCREEN_MIN SCREEN_HOME
 #define SCREEN_MAX SCREEN_COMPLETE
 
 //**********************************************************************************
@@ -81,6 +82,13 @@ const byte BMP3[] PROGMEM = {B11111, B11111, B10001, B00011, B01111, B11111, B11
 const byte BMP4[] PROGMEM = {B01111, B01110, B01100, B00001, B01111, B00111, B00011, B11101};
 const byte BMP5[] PROGMEM = {B11111, B00111, B00111, B11111, B11111, B11111, B11110, B11001};
 const byte BMP6[] PROGMEM = {B11111, B11111, B11110, B11101, B11011, B00111, B11111, B11111};
+
+const byte BTLOGO0[] PROGMEM = {B00000, B00000, B00000, B11111, B10001, B10001, B11111, B00001};
+const byte BTLOGO1[] PROGMEM = {B00000, B00000, B00000, B00000, B00000, B00011, B01100, B01111};
+const byte BTLOGO2[] PROGMEM = {B00000, B00000, B00000, B00000, B00000, B11100, B00011, B11111};
+const byte BTLOGO3[] PROGMEM = {B00100, B01100, B01111, B00111, B00100, B01100, B01111, B00111};
+const byte BTLOGO4[] PROGMEM = {B00010, B00011, B11111, B11110, B00010, B00011, B11111, B11110};
+
 const byte UNLOCK_ICON[] PROGMEM = {B00110, B01001, B01001, B01000, B01111, B01111, B01111, B00000};
 const byte PROG_ICON[] PROGMEM = {B00001, B11101, B10101, B11101, B10001, B10001, B00001, B11111};
 const byte BELL[] PROGMEM = {B00100, B01110, B01110, B01110, B11111, B00000, B00100, B00000};
@@ -153,7 +161,23 @@ void uiCore() {
 void screenInit(byte screen) {
   clearLCD();
   
-  if (screen == SCREEN_LCD) {
+  if (screen == SCREEN_HOME) {
+      lcdSetCustChar_P(0, BTLOGO0);
+      lcdSetCustChar_P(1, BTLOGO1);
+      lcdSetCustChar_P(2, BTLOGO2);
+      lcdSetCustChar_P(3, BTLOGO3);
+      lcdSetCustChar_P(4, BTLOGO4);
+      lcdWriteCustChar(0, 0, 0);
+      lcdWriteCustChar(0, 1, 1);
+      lcdWriteCustChar(0, 2, 2);
+      lcdWriteCustChar(1, 1, 3);
+      lcdWriteCustChar(1, 2, 4);
+      printLCD_P(1, 4, BT);
+      printLCD_P(1, 16, BTVER);
+      printLCD_P(2, 4, PSTR("Build"));
+      printLCDLPad(2, 10, itoa(BUILD, buf, 10), 4, '0');
+      printLCD_P(3, 0, PSTR("www.brewtroller.com"));
+  } else if (screen == SCREEN_LCD) {
     //Screen Init: Home
     lcdSetCustChar_P(0, BMP0);
     lcdSetCustChar_P(1, BMP1);
@@ -372,7 +396,8 @@ void screenInit(byte screen) {
 // screenRefresh:  Refresh active screen
 //**********************************************************************************
 void screenRefresh(byte screen) {
-  if (screen == SCREEN_LCD) {
+  if (screen == SCREEN_HOME) {
+  } else if (screen == SCREEN_LCD) {
   } else if (screen == SCREEN_EEPROM) {
   } else if (screen == SCREEN_OUTPUTS) {
   } else if (screen == SCREEN_ONEWIRE) {
@@ -427,7 +452,20 @@ void screenEnter(byte screen) {
   } else if (Encoder.ok()) {
     if (!screenLock) lockUI();
     else {
-      if (screen == SCREEN_LCD) {
+      if (screen == SCREEN_HOME) {
+        menu *homeMenu;
+        homeMenu->begin(3, 19, 4);
+        homeMenu->addItem("Cancel", 0);
+        #ifdef UI_LCD_I2C
+          homeMenu->addItem("LCD Adjust", 1);
+        #endif
+        byte val = scrollMenu("Main Menu", homeMenu);
+        #ifdef UI_LCD_I2C
+          if (val == 1) adjustLCD();
+        #endif
+        screenInit(activeScreen);
+        unlockUI();
+      } else if (screen == SCREEN_LCD) {
         activeScreen = SCREEN_EEPROM;
         screenInit(activeScreen);
       } else if (screen == SCREEN_EEPROM) {
@@ -456,4 +494,136 @@ void screenEnter(byte screen) {
   }
 }
 
+#ifdef UI_LCD_I2C
+  void adjustLCD() {
+    byte cursorPos = 0; //0 = brightness, 1 = contrast, 2 = cancel, 3 = save
+    boolean cursorState = 0; //0 = Unselected, 1 = Selected
 
+    Encoder.setMin(0);
+    Encoder.setCount(0);
+    Encoder.setMax(3);
+    
+    clearLCD();
+    printLCD_P(0,0,PSTR("Adjust LCD"));
+    printLCD_P(1, 1, PSTR("Brightness:"));
+    printLCD_P(2, 3, PSTR("Contrast:"));
+    printLCD_P(3, 1, PSTR("Cancel"));
+    printLCD_P(3, 15, PSTR("Save"));
+    byte bright = i2cGetBright();
+    byte contrast = i2cGetContrast();
+    byte origBright = bright;
+    byte origContrast = contrast;
+    boolean redraw = 1;
+    while(1) {
+      int encValue;
+      if (redraw) {
+        redraw = 0;
+        encValue = Encoder.getCount();
+      }
+      else encValue = Encoder.change();
+      if (encValue >= 0) {
+        if (cursorState) {
+          if (cursorPos == 0) { 
+            bright = encValue;
+            i2cSetBright(bright);
+          } else if (cursorPos == 1) {
+            contrast = encValue;
+            i2cSetContrast(contrast);
+          }
+        } else {
+          cursorPos = encValue;
+          printLCD_P(1, 12, PSTR(" "));
+          printLCD_P(1, 16, PSTR(" "));
+          printLCD_P(2, 12, PSTR(" "));
+          printLCD_P(2, 16, PSTR(" "));
+          printLCD_P(3, 0, PSTR(" "));
+          printLCD_P(3, 7, PSTR(" "));
+          printLCD_P(3, 14, PSTR(" "));
+          printLCD_P(3, 19, PSTR(" "));
+          if (cursorPos == 0) {
+            printLCD_P(1, 12, PSTR(">"));
+            printLCD_P(1, 16, PSTR("<"));
+          } else if (cursorPos == 1) {
+            printLCD_P(2, 12, PSTR(">"));
+            printLCD_P(2, 16, PSTR("<"));
+          } else if (cursorPos == 2) {
+            printLCD_P(3, 0, PSTR(">"));
+            printLCD_P(3, 7, PSTR("<"));
+          } else if (cursorPos == 3) {
+            printLCD_P(3, 14, PSTR(">"));
+            printLCD_P(3, 19, PSTR("<"));
+          }
+        }
+        printLCDLPad(1, 13, itoa(bright, buf, 10), 3, ' ');
+        printLCDLPad(2, 13, itoa(contrast, buf, 10), 3, ' ');
+      }
+      if (Encoder.ok()) {
+        if (cursorPos == 2) {
+          i2cSetBright(origBright);
+          i2cSetContrast(origContrast);
+          return;
+        }
+        else if (cursorPos == 3) {
+          i2cSaveConfig();
+          return;
+        }
+        cursorState = cursorState ^ 1;
+        if (cursorState) {
+          Encoder.setMin(0);
+          Encoder.setMax(255);
+          if (cursorPos == 0) Encoder.setCount(bright);
+          else if (cursorPos == 1) Encoder.setCount(contrast);
+        } else {
+          Encoder.setMin(0);
+          Encoder.setMax(3);
+          Encoder.setCount(cursorPos);
+        }
+      } else if (Encoder.cancel()) return;
+      brewCore();
+    }
+  }
+#endif
+
+/*
+  scrollMenu() & drawMenu():
+  Glues together menu, Encoder and LCD objects
+*/
+
+byte scrollMenu(char sTitle[], menu *objMenu) {
+  Encoder.setMin(0);
+  Encoder.setMax(objMenu->getItemCount() - 1);
+  objMenu->refreshDisp();
+  //Odd bug: _topItem = 1 after first refreshDisp() call; second call resolves
+  objMenu->refreshDisp();
+  Encoder.setCount(objMenu->getCursor());
+  //Force refresh in case selected value was set
+  drawMenu(sTitle, objMenu);
+  
+  while(1) {
+    if (Encoder.getDelta()) {
+      objMenu->setSelected(Encoder.getCount());
+      if (objMenu->refreshDisp()) drawMenu(sTitle, objMenu);
+      for (byte i = 0; i < 3; i++) printLCD(i + 1, 0, " ");
+      printLCD(objMenu->getCursor() + 1, 0, ">");
+    }
+    
+    //If Enter
+    if (Encoder.ok()) {
+      return objMenu->getValue();
+    } else if (Encoder.cancel()) {
+      return objMenu->getItemCount();
+    }
+    brewCore();
+  }
+}
+
+void drawMenu(char sTitle[], menu *objMenu) {
+  clearLCD();
+  if (sTitle != NULL) printLCD(0, 0, sTitle);
+
+  for (byte i = 0; i < 3; i++) {
+    objMenu->getRow(i, buf);
+    printLCD(i + 1, 1, buf);
+  }
+  printLCD(objMenu->getCursor() + 1, 0, ">");
+}

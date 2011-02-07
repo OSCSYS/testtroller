@@ -38,8 +38,6 @@ byte screen[80];
 
 void initLCD(){
   Wire.begin();
-  i2cSetContrast(0);
-  i2cSetBright(255);
   i2cLcdBegin(20, 4);
 }
 
@@ -196,6 +194,43 @@ void i2cSetContrast(byte val) {
   Wire.endTransmission();
   delay(3);
 }
+
+byte i2cGetBright(void) {
+  Wire.beginTransmission(i2cLcdAddr);
+  Wire.send(0x09);
+  Wire.endTransmission();
+  Wire.requestFrom((int)i2cLcdAddr, (int)1);
+  while(Wire.available())
+  {
+    return Wire.receive();
+  }
+}
+
+byte i2cGetContrast(void) {
+  Wire.beginTransmission(i2cLcdAddr);
+  Wire.send(0x0A);
+  Wire.endTransmission();
+  Wire.requestFrom((int)i2cLcdAddr, (int)1);
+  while(Wire.available())
+  {
+    return Wire.receive();
+  }
+}
+
+byte i2cSaveConfig(void) {
+  Wire.beginTransmission(i2cLcdAddr);
+  Wire.send(0x0B);
+  Wire.endTransmission();
+  delay(10);
+}
+
+byte i2cLoadConfig(void) {
+  Wire.beginTransmission(i2cLcdAddr);
+  Wire.send(0x0C);
+  Wire.endTransmission();
+  delay(10);
+}
+
 
 #endif
 #endif

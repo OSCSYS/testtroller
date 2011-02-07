@@ -76,6 +76,7 @@ void pinInit() {
 #endif
 
 #ifdef BTBOARD_4
+  hbPin.setup(HEARTBEAT_PIN, OUTPUT);
   digInPin[0].setup(DIGIN1_PIN, INPUT);
   digInPin[1].setup(DIGIN2_PIN, INPUT);
   digInPin[2].setup(DIGIN3_PIN, INPUT);
