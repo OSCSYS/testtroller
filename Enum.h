@@ -79,22 +79,30 @@
   #define DIGIN5_PIN 22
 #endif
 
-//Reverse pin swap on 2.x boards
-#ifdef BTBOARD_22
+#if defined BTBOARD_4
+  #define HLTVOL_APIN 3
+  #define MASHVOL_APIN 2
+  #define KETTLEVOL_APIN 1
+  #define STEAMPRESS_APIN 0
+#elif defined BTBOARD_22
   #define HLTVOL_APIN 2
+  #define MASHVOL_APIN 1
   #define KETTLEVOL_APIN 0
+  #define STEAMPRESS_APIN 3
 #else
   #define HLTVOL_APIN 0
+  #define MASHVOL_APIN 1
   #define KETTLEVOL_APIN 2
+  #define STEAMPRESS_APIN 3
 #endif
 
-#define MASHVOL_APIN 1
-#define STEAMPRESS_APIN 3
-
-#endif
 
 #define VS_HLT 0
 #define VS_MASH 1
 #define VS_KETTLE 2
 #define VS_STEAM 3
 #define VS_PUMP 3
+
+#endif
+
+

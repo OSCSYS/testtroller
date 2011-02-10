@@ -1,5 +1,6 @@
+screenent
 /*
-   Copyright (C) 2009, 2010 Matt Reba, Jermeiah Dillingham
+   Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
     This file is part of BrewTroller.
 
@@ -453,18 +454,10 @@ void screenEnter(byte screen) {
     if (!screenLock) lockUI();
     else {
       if (screen == SCREEN_HOME) {
-        menu homeMenu;
-        homeMenu.begin(3, 19, 2);
-        homeMenu.addItem("Cancel", 0);
-        #ifdef UI_LCD_I2C
-          homeMenu.addItem("LCD Adjust", 1);
-        #endif
-        byte val = scrollMenu("Main Menu", &homeMenu);
-        #ifdef UI_LCD_I2C
-          if (val == 1) adjustLCD();
-        #endif
-        screenInit(activeScreen);
-        unlockUI();
+	#ifdef UI_LCD_I2C
+	        adjustLCD();
+        	unlockUI();
+	#endif
       } else if (screen == SCREEN_LCD) {
         activeScreen = SCREEN_EEPROM;
         screenInit(activeScreen);
@@ -584,44 +577,4 @@ void screenEnter(byte screen) {
   }
 #endif
 
-/*
-  scrollMenu() & drawMenu():
-  Glues together menu, Encoder and LCD objects
-*/
 
-byte scrollMenu(char sTitle[], menu *objMenu) {
-  Encoder.setMin(0);
-  Encoder.setMax(objMenu->getItemCount() - 1);
-  //Force refresh in case selected value was set
-  objMenu->refreshDisp();
-  Encoder.setCount(objMenu->getCursor());
-  drawMenu(sTitle, objMenu);
-  
-  while(1) {
-    if (Encoder.getDelta()) {
-      objMenu->setSelected(Encoder.getCount());
-      if (objMenu->refreshDisp()) drawMenu(sTitle, objMenu);
-      for (byte i = 0; i < 3; i++) printLCD(i + 1, 0, " ");
-      printLCD(objMenu->getCursor() + 1, 0, ">");
-    }
-    
-    //If Enter
-    if (Encoder.ok()) {
-      return objMenu->getValue();
-    } else if (Encoder.cancel()) {
-      return objMenu->getItemCount();
-    }
-    brewCore();
-  }
-}
-
-void drawMenu(char sTitle[], menu *objMenu) {
-  clearLCD();
-  if (sTitle != NULL) printLCD(0, 0, sTitle);
-
-  for (byte i = 0; i < 3; i++) {
-    objMenu->getVisibleRow(i, buf);
-    printLCD(i + 1, 1, buf);
-  }
-  printLCD(objMenu->getCursor() + 1, 0, ">");
-}

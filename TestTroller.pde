@@ -1,6 +1,6 @@
-#define BUILD 673
+#define BUILD 679
 /*
-   Copyright (C) 2009, 2010 Matt Reba, Jermeiah Dillingham
+   Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
     This file is part of BrewTroller.
 
@@ -36,7 +36,6 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #include "Config.h"
 #include "Enum.h"
 #include <pin.h>
-#include <menu.h>
 
 //**********************************************************************************
 // Compile Time Logic
