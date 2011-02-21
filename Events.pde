@@ -1,3 +1,4 @@
+#ifdef TRIGGERS
 void trigInit() {
   for (byte i = 0; i < 5; i++) { triggers[i] = 0; }
   digInPin[0].attachPCInt(RISING, trig0ISR);
@@ -12,3 +13,4 @@ void trig1ISR() { triggers[1] = 1; }
 void trig2ISR() { triggers[2] = 1; }
 void trig3ISR() { triggers[3] = 1; }
 void trig4ISR() { triggers[4] = 1; }
+#endif

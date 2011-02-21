@@ -1,4 +1,4 @@
-#define BUILD 679
+#define BUILD 685
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -69,6 +69,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #ifdef BTBOARD_4
   #define UI_LCD_I2C
   #define HEARTBEAT
+  #define TRIGGERS
 #endif
 
 //Select OneWire Comm Type
@@ -134,10 +135,12 @@ void setup() {
   
   //Pin initialization (Outputs.pde)
   pinInit();
-  
+
+#ifdef TRIGGERS
   //Digital Input Initialization (Events.pde)
   trigInit();
-  
+#endif
+
   tempInit();
   
   //User Interface Initialization (UI.pde)
@@ -166,6 +169,7 @@ void brewCore() {
   updateLCD();
 }
 
+#ifdef HEARTBEAT
 unsigned long hbStart = 0;
 void heartbeat() {
   if (millis() - hbStart > 750) {
@@ -173,3 +177,4 @@ void heartbeat() {
     hbStart = millis();
   }
 }
+#endif

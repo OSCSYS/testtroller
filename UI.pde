@@ -1,4 +1,3 @@
-screenent
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -365,7 +364,7 @@ void screenInit(byte screen) {
         if (Encoder.ok()) {
           if (lastCount == encMax) {
             setValves(0);
-            activeScreen = SCREEN_COMPLETE;
+            activeScreen++;
             screenInit(activeScreen);
             return;
           }
