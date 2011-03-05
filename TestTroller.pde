@@ -1,4 +1,4 @@
-#define BUILD 685
+#define BUILD 689
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -123,6 +123,7 @@ const char BTVER[] PROGMEM = "2.0";
 
 
 boolean triggers[5];
+unsigned long trigReset;
 
 //**********************************************************************************
 // Setup

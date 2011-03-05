@@ -239,25 +239,30 @@ void screenInit(byte screen) {
       digitalWrite(HLTHEAT_PIN, HIGH);
       delay(500);
       digitalWrite(HLTHEAT_PIN, LOW);
-    
+      delay(125);
+      
       printLCDCenter(1, 0, "Mash Heat", 20);
       updateLCD();
       digitalWrite(MASHHEAT_PIN, HIGH);
       delay(500);
       digitalWrite(MASHHEAT_PIN, LOW);
-    
+      delay(125);
+      
       printLCDCenter(1, 0, "Kettle Heat", 20);
       updateLCD();
       digitalWrite(KETTLEHEAT_PIN, HIGH);
       delay(500);
       digitalWrite(KETTLEHEAT_PIN, LOW);
-    
+      delay(125);
+      
     #ifdef USESTEAM
       printLCDCenter(1, 0, "Steam Heat", 20);
       updateLCD();
       digitalWrite(STEAMHEAT_PIN, HIGH);
       delay(500);
       digitalWrite(STEAMHEAT_PIN, LOW);
+      delay(125);
+      
     #endif
     
       printLCDCenter(1, 0, "", 20);
@@ -267,6 +272,8 @@ void screenInit(byte screen) {
         updateLCD();
         setValves((unsigned long)1<<valve);
         delay(500);
+        setValves(0);
+        delay(125);
       }
       setValves(0);
     
@@ -432,11 +439,15 @@ void screenRefresh(byte screen) {
   } else if (screen == SCREEN_MANUALPV) {
     
   } else if (screen == SCREEN_TRIGGERS) {
-    if(triggers[0]) printLCD_P(0, 3, PSTR("TRIG"));
-    if(triggers[1]) printLCD_P(0, 13, PSTR("TRIG"));
-    if(triggers[2]) printLCD_P(1, 3, PSTR("TRIG"));
-    if(triggers[3]) printLCD_P(1, 13, PSTR("TRIG"));
-    if(triggers[4]) printLCD_P(2, 8, PSTR("TRIG"));
+    if(triggers[0]) printLCD_P(0, 3, PSTR("TRIG")); else printLCD_P(0, 3, PSTR("WAIT"));
+    if(triggers[1]) printLCD_P(0, 13, PSTR("TRIG")); else printLCD_P(0, 13, PSTR("WAIT"));
+    if(triggers[2]) printLCD_P(1, 3, PSTR("TRIG")); else printLCD_P(1, 3, PSTR("WAIT"));
+    if(triggers[3]) printLCD_P(1, 13, PSTR("TRIG")); else printLCD_P(1, 13, PSTR("WAIT"));
+    if(triggers[4]) printLCD_P(2, 8, PSTR("TRIG")); else printLCD_P(2, 8, PSTR("WAIT"));
+    if (millis() - trigReset > 3000) {
+	for (byte i = 0; i < 5; i++) triggers[i] = 0;
+        trigReset = millis();
+    }
   } else if (screen == SCREEN_COMPLETE) {
   }
 }

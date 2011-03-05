@@ -8,9 +8,9 @@ void trigInit() {
   digInPin[4].attachPCInt(RISING, trig4ISR);
 }
 
-void trig0ISR() { triggers[0] = 1; }
-void trig1ISR() { triggers[1] = 1; }
-void trig2ISR() { triggers[2] = 1; }
-void trig3ISR() { triggers[3] = 1; }
-void trig4ISR() { triggers[4] = 1; }
+void trig0ISR() { triggers[0] = 1; trigReset = millis(); }
+void trig1ISR() { triggers[1] = 1; trigReset = millis(); }
+void trig2ISR() { triggers[2] = 1; trigReset = millis(); }
+void trig3ISR() { triggers[3] = 1; trigReset = millis(); }
+void trig4ISR() { triggers[4] = 1; trigReset = millis(); }
 #endif
