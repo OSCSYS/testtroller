@@ -59,6 +59,7 @@ void pinInit() {
     valvePin[9].setup(VALVEA_PIN, OUTPUT);
     valvePin[10].setup(VALVEB_PIN, OUTPUT);
   #endif
+  setValves(0);
   
   heatPin[VS_HLT].setup(HLTHEAT_PIN, OUTPUT);
   heatPin[VS_MASH].setup(MASHHEAT_PIN, OUTPUT);
