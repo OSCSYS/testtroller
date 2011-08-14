@@ -110,7 +110,8 @@ void setValves(unsigned long bits) {
     //stop shifting
     muxClockPin.clear();
     muxLatchPin.set();
-
+    muxLatchPin.clear();
+    
     //Enable outputs
     #ifdef BTBOARD_4
       muxMRPin.set();

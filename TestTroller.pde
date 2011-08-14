@@ -1,4 +1,4 @@
-#define BUILD 696
+#define BUILD 751
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -58,11 +58,6 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 //Enable Serial on BTBOARD_22+ boards or if DEBUG is set
 #if !defined BTBOARD_1
   #define USESERIAL
-#endif
-
-//Enable Mash Avergaing Logic if any Mash_AVG_AUXx options were enabled
-#if defined MASH_AVG_AUX1 || defined MASH_AVG_AUX2 || defined MASH_AVG_AUX3
-  #define MASH_AVG
 #endif
 
 //Use I2C LCD for BTBoard_4
