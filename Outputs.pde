@@ -110,6 +110,7 @@ void setValves(unsigned long bits) {
     //stop shifting
     muxClockPin.clear();
     muxLatchPin.set();
+    delayMicroseconds(10);
     muxLatchPin.clear();
     
     //Enable outputs
