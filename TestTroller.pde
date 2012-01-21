@@ -33,50 +33,14 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 // BEGIN CODE
 //*****************************************************************************************************************************
 #include <avr/pgmspace.h>
-#include "Config.h"
-#include "Enum.h"
 #include <pin.h>
+#include "HWProfile.h"
+#include <Wire.h>
+#include <menu.h>
 
 //**********************************************************************************
 // Compile Time Logic
 //**********************************************************************************
-
-// Disable On board pump/valve outputs for BT Board 3.0 and older boards using steam
-// Set MUXBOARDS 0 for boards without on board or MUX Pump/valve outputs
-#if (defined BTBOARD_3 || defined BTBOARD_4) && !defined MUXBOARDS
-  #define MUXBOARDS 2
-#endif
-
-#if !defined BTBOARD_3 && !defined BTBOARD_4 && !defined USESTEAM && !defined MUXBOARDS
-  #define ONBOARDPV
-#else
-  #if !defined MUXBOARDS
-    #define MUXBOARDS 0
-  #endif
-#endif
-
-//Enable Serial on BTBOARD_22+ boards or if DEBUG is set
-#if !defined BTBOARD_1
-  #define USESERIAL
-#endif
-
-//Use I2C LCD for BTBoard_4
-#ifdef BTBOARD_4
-  #define UI_LCD_I2C
-  #define HEARTBEAT
-  #define TRIGGERS
-#endif
-
-//Select OneWire Comm Type
-#ifdef TS_ONEWIRE
-  #ifdef BTBOARD_4
-    #define TS_ONEWIRE_I2C //BTBOARD_4 uses I2C if OneWire support is used
-  #else
-    #ifndef TS_ONEWIRE_I2C
-      #define TS_ONEWIRE_GPIO //Previous boards use GPIO unless explicitly configured for I2C
-    #endif
-  #endif
-#endif
 
 #if defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
   #define EEPROM_BLOCK_SIZE 256
@@ -85,40 +49,32 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #endif
 
 //Heat Output Pin Array
-pin heatPin[4], alarmPin;
-
-#ifdef ONBOARDPV
-  pin valvePin[11];
+#ifdef OUTPUT_GPIO
+  pin gpioPin[OUT_GPIO_COUNT];
 #endif
 
-#if MUXBOARDS > 0
-  pin muxLatchPin, muxDataPin, muxClockPin;
-  #ifdef BTBOARD_4
-    pin muxMRPin;
-  #else
-    pin muxOEPin;
-  #endif
+
+#ifdef OUTPUT_MUX
+    pin muxLatchPin, muxDataPin, muxClockPin, muxENPin;
+    unsigned long vlvBits;
 #endif
 
-#ifdef BTBOARD_4
-  pin digInPin[6];
+#ifdef DIGITAL_INPUTS
+  pin digitalInPin[DIGITALIN_COUNT];
+  boolean triggers[DIGITALIN_COUNT];
+  unsigned long trigReset;
+#endif
+
+#ifdef HEARTBEAT
   pin hbPin;
 #endif
 
-//Volume Sensor Pin Array
-byte vSensor[3] = { HLTVOL_APIN, MASHVOL_APIN, KETTLEVOL_APIN};
-
-//Shared buffers
-char buf[20];
-
-unsigned long vlvBits;
+#ifdef ANALOG_INPUTS
+  byte analogPinNum[ANALOGIN_COUNT] = ANALOGIN_PINS;
+#endif
 
 const char BT[] PROGMEM = "TestTroller";
 const char BTVER[] PROGMEM = "2.0";
-
-
-boolean triggers[5];
-unsigned long trigReset;
 
 //**********************************************************************************
 // Setup
@@ -132,10 +88,10 @@ void setup() {
   //Pin initialization (Outputs.pde)
   pinInit();
 
-#ifdef TRIGGERS
-  //Digital Input Initialization (Events.pde)
-  trigInit();
-#endif
+  #ifdef DIGITAL_INPUTS
+    //Digital Input Initialization (Events.pde)
+    trigInit();
+  #endif
 
   tempInit();
   
