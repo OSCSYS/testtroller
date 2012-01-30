@@ -1,40 +1,41 @@
 /*
-OpenTroller DX1 TestTroller Hardware Configuration
+BrewTroller 4.0 Pro Hardware Configuration
 */
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
 
-  #define ENCODER_I2C
-  #define ENCODER_I2CADDR 0x01
-
+  #define ENCA_PIN 2
+  #define ENCB_PIN 4
+  #define ENTER_PIN 5
+  
   #define OUTPUT_GPIO
-  #define OUT_GPIO_COUNT 14 //14 Outputs
-  #define OUT_GPIO_PINS {28, 29, 30, 31, 7, 6, 3, 4, 12, 15, 14, 13, 1, 2}
+  #define OUT_GPIO_COUNT 5 //15 Outputs
+  #define OUT_GPIO_PINS {23, 1, 3, 7, 15}
 /*
-  28,	//OUT1
-  29,	//OUT2
-  30,	//OUT3
-  31,	//OUT4
-  7,	//OUT5
-  6,	//OUT6
-  3,	//OUT7
-  4,	//OUT8
-  12,	//OUT9
-  15,	//OUT10
-  14,	//OUT11
-  13,	//OUT12
-  1,	//OUT13
-  2	//OUT14
+	23, //HLT
+	1, //Mash
+	3, //Kettle
+	7, //Steam
+	15 //Alarm
 */
+  
+  #define OUTPUT_MUX
+  #define OUT_MUX_COUNT 16 //16 Outputs
+    
+  #define MUX_LATCH_PIN 12
+  #define MUX_CLOCK_PIN 13
+  #define MUX_DATA_PIN 14
+  #define MUX_ENABLE_PIN 6
+  #define MUX_ENABLE_LOGIC 1
 
   #define DIGITAL_INPUTS
-  #define DIGITALIN_COUNT 4
-  #define DIGITALIN_PINS {21, 20, 19, 18}
+  #define DIGITALIN_COUNT 5
+  #define DIGITALIN_PINS {18, 19, 20, 21, 22}
   
   #define ANALOG_INPUTS
   #define ANALOGIN_COUNT 4
-  #define ANALOGIN_PINS {7, 6, 5, 4}
+  #define ANALOGIN_PINS {3, 2, 1, 0}
   
   #define UI_LCD_I2C
   #define UI_LCD_I2CADDR 0x01

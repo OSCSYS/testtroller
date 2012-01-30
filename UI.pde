@@ -264,7 +264,7 @@ void screenInit(byte screen) {
           strcat(title, itoa(i + 1, index, 10));
           printLCDCenter(1, 0, title, 20);
           updateLCD();
-          setMUX((unsigned long)1<<valve);
+          setMUX((unsigned long)1<<i);
           delay(500);
           setMUX(0);
           delay(125);
@@ -345,15 +345,17 @@ void screenInit(byte screen) {
             outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
             if (gpioPin[i].get()) outMenu.appendItem(": On", menuNum);
             else outMenu.appendItem(": Off", menuNum);
+            menuNum++;
           }
         #endif
         #ifdef OUTPUT_MUX
           for (byte i = 0; i < OUT_MUX_COUNT; i++) {
             char index[4];
             outMenu.setItem("MUX Output ", menuNum);
-            outMenu.appendItem(itoa(index, i + 1, 10), menuNum);
+            outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
             if (vlvBits & ((unsigned long) 1 << i)) outMenu.appendItem(": On", menuNum);
             else outMenu.appendItem(": Off", menuNum);
+            menuNum++;
           }
         #endif
         byte lastOption = scrollMenu("Manual Output Test", &outMenu);

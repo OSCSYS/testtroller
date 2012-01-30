@@ -37,12 +37,11 @@ void pinInit() {
     muxLatchPin.setup(MUX_LATCH_PIN, OUTPUT);
     muxDataPin.setup(MUX_DATA_PIN, OUTPUT);
     muxClockPin.setup(MUX_CLOCK_PIN, OUTPUT);
-    #if defined MUX_MR_PIN
-      muxENPin.setup(MUX_MR_PIN, OUTPUT);
-    #elif defined MUX_OE_PIN
-      muxENPin.setup(MUX_OE_PIN, OUTPUT);
+    muxENPin.setup(MUX_ENABLE_PIN, OUTPUT);
+    #if MUX_ENABLE_LOGIC == 0
       muxENPin.set();
     #endif
+    setMUX(0);
   #endif
   
   #ifdef HEARTBEAT
