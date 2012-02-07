@@ -5,7 +5,6 @@ BrewTroller 4.0 Lite Hardware Configuration
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
-  #include "Config.h"
   
   #define ENCA_PIN 3
   #define ENCB_PIN 2

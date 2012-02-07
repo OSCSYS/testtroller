@@ -4,7 +4,6 @@ BrewTroller 2.2 - 2.4 Hardware Configuration
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
-  #include "Config.h"
 
   #define ENCODER_OLD_CONSTRUCTOR
   #define ENCA_PIN 2

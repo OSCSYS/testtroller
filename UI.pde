@@ -108,8 +108,8 @@ unsigned long lastRead;
 // uiInit:  One time intialization of all UI logic
 //**********************************************************************************
 void uiInit() {
-  initLCD();
-  lcdSetCustChar_P(7, UNLOCK_ICON);
+  LCD.init();
+  LCD.setCustChar_P(7, UNLOCK_ICON);
   
   #ifndef ENCODER_I2C
     #ifndef ENCODER_OLD_CONSTRUCTOR
@@ -163,65 +163,65 @@ void uiCore() {
 // screenInit: Initialize active screen
 //**********************************************************************************
 void screenInit(byte screen) {
-  clearLCD();
+  LCD.clear();
   
   if (screen == SCREEN_HOME) {
     char buildNum[5];
-    lcdSetCustChar_P(0, BTLOGO0);
-    lcdSetCustChar_P(1, BTLOGO1);
-    lcdSetCustChar_P(2, BTLOGO2);
-    lcdSetCustChar_P(3, BTLOGO3);
-    lcdSetCustChar_P(4, BTLOGO4);
-    lcdWriteCustChar(0, 0, 0);
-    lcdWriteCustChar(0, 1, 1);
-    lcdWriteCustChar(0, 2, 2);
-    lcdWriteCustChar(1, 1, 3);
-    lcdWriteCustChar(1, 2, 4);
-    printLCD_P(1, 4, BT);
-    printLCD_P(1, 16, BTVER);
-    printLCD_P(2, 4, PSTR("Build"));
-    printLCDLPad(2, 10, itoa(BUILD, buildNum, 10), 4, '0');
-    printLCD_P(3, 0, PSTR("www.brewtroller.com"));
+    LCD.setCustChar_P(0, BTLOGO0);
+    LCD.setCustChar_P(1, BTLOGO1);
+    LCD.setCustChar_P(2, BTLOGO2);
+    LCD.setCustChar_P(3, BTLOGO3);
+    LCD.setCustChar_P(4, BTLOGO4);
+    LCD.writeCustChar(0, 0, 0);
+    LCD.writeCustChar(0, 1, 1);
+    LCD.writeCustChar(0, 2, 2);
+    LCD.writeCustChar(1, 1, 3);
+    LCD.writeCustChar(1, 2, 4);
+    LCD.print_P(1, 4, BT);
+    LCD.print_P(1, 16, BTVER);
+    LCD.print_P(2, 4, PSTR("Build"));
+    LCD.lPad(2, 10, itoa(BUILD, buildNum, 10), 4, '0');
+    LCD.print_P(3, 0, PSTR("www.brewtroller.com"));
   } else if (screen == SCREEN_LCD) {
     char testNum[2];
     //Screen Init: Home
-    lcdSetCustChar_P(0, BMP0);
-    lcdSetCustChar_P(1, BMP1);
-    lcdSetCustChar_P(2, BMP2);
-    lcdSetCustChar_P(3, BMP3);
-    lcdSetCustChar_P(4, BMP4);
-    lcdSetCustChar_P(5, BMP5);
-    lcdSetCustChar_P(6, BMP6);
-    printLCD_P(3, 0, PSTR("Test   /  : LCD"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.setCustChar_P(0, BMP0);
+    LCD.setCustChar_P(1, BMP1);
+    LCD.setCustChar_P(2, BMP2);
+    LCD.setCustChar_P(3, BMP3);
+    LCD.setCustChar_P(4, BMP4);
+    LCD.setCustChar_P(5, BMP5);
+    LCD.setCustChar_P(6, BMP6);
+    LCD.print_P(3, 0, PSTR("Test   /  : LCD"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
   
-    for (byte pos = 0; pos < 3; pos++) printLCD_P(pos, 0, PSTR(">"));
-    for (byte pos = 0; pos < 3; pos++) printLCD_P(pos, 19, PSTR("<"));
+    for (byte pos = 0; pos < 3; pos++) LCD.print_P(pos, 0, PSTR(">"));
+    for (byte pos = 0; pos < 3; pos++) LCD.print_P(pos, 19, PSTR("<"));
     for (byte pos = 1; pos < 19; pos = pos + 3) {
-      lcdWriteCustChar(0, pos + 1, 0);
-      lcdWriteCustChar(0, pos + 2, 1);
-      lcdWriteCustChar(1, pos, 2); 
-      lcdWriteCustChar(1, pos + 1, 3); 
-      lcdWriteCustChar(1, pos + 2, 255); 
-      lcdWriteCustChar(2, pos, 4); 
-      lcdWriteCustChar(2, pos + 1, 5); 
-      lcdWriteCustChar(2, pos + 2, 6); 
+      LCD.writeCustChar(0, pos + 1, 0);
+      LCD.writeCustChar(0, pos + 2, 1);
+      LCD.writeCustChar(1, pos, 2); 
+      LCD.writeCustChar(1, pos + 1, 3); 
+      LCD.writeCustChar(1, pos + 2, 255); 
+      LCD.writeCustChar(2, pos, 4); 
+      LCD.writeCustChar(2, pos + 1, 5); 
+      LCD.writeCustChar(2, pos + 2, 6); 
     }
   } else if (screen == SCREEN_EEPROM) {
     char testNum[2];
-    lcdSetCustChar_P(0, CHK);
-    printLCD_P(3, 0, PSTR("Test   /  : EEPROM"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.setCustChar_P(0, CHK);
+    LCD.print_P(3, 0, PSTR("Test   /  : EEPROM"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     
     if (screenLock) {
       for (byte block = 0; block < 16; block++) {
-        printLCD_P(1, block + 2, PSTR("W"));
-        updateLCD();
+        LCD.print_P(1, block + 2, PSTR("W"));
+        LCD.update();
         for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, pos);
-        printLCD_P(1, block + 2, PSTR("V"));
-        updateLCD();
+        LCD.print_P(1, block + 2, PSTR("V"));
+        LCD.update();
         boolean failed = 0;
         for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) {
           if (EEPROM.read(block * EEPROM_BLOCK_SIZE + pos) != pos){
@@ -230,16 +230,16 @@ void screenInit(byte screen) {
           }
           EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, 0);
         }
-        if (failed) printLCD_P(1, block + 2, PSTR("X"));
-        else lcdWriteCustChar(1, block + 2, 0);
-        updateLCD();
+        if (failed) LCD.print_P(1, block + 2, PSTR("X"));
+        else LCD.writeCustChar(1, block + 2, 0);
+        LCD.update();
       }
     }
   } else if (screen == SCREEN_OUTPUTS) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : Outputs"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(3, 0, PSTR("Test   /  : Outputs"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     
     if (screenLock) {
       #ifdef OUTPUT_GPIO
@@ -248,8 +248,8 @@ void screenInit(byte screen) {
           char index[4];
           strcpy(title, "GPIO OUTPUT ");
           strcat(title, itoa(i + 1, index, 10));
-          printLCDCenter(1, 0, title, 20);
-          updateLCD();
+          LCD.center(1, 0, title, 20);
+          LCD.update();
           gpioPin[i].set();
           delay(500);
           gpioPin[i].clear();
@@ -262,8 +262,8 @@ void screenInit(byte screen) {
           char index[4];
           strcpy(title, "MUX OUTPUT ");
           strcat(title, itoa(i + 1, index, 10));
-          printLCDCenter(1, 0, title, 20);
-          updateLCD();
+          LCD.center(1, 0, title, 20);
+          LCD.update();
           setMUX((unsigned long)1<<i);
           delay(500);
           setMUX(0);
@@ -274,48 +274,48 @@ void screenInit(byte screen) {
     }
   } else if (screen == SCREEN_ONEWIRE) {
     char testNum[2];
-    printLCD_P(0, 0, PSTR("Found Address:"));
-    printLCD_P(3, 0, PSTR("Test   /  : OneWire"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(0, 0, PSTR("Found Address:"));
+    LCD.print_P(3, 0, PSTR("Test   /  : OneWire"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     
     #ifdef USEMETRIC
-      printLCD_P(2, 13, PSTR("C"));
+      LCD.print_P(2, 13, PSTR("C"));
     #else
-      printLCD_P(2, 13, PSTR("F"));  
+      LCD.print_P(2, 13, PSTR("F"));  
     #endif
     convertAll();
     convertTime = millis();
   } else if (screen == SCREEN_VOLUME) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : ADC"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(3, 0, PSTR("Test   /  : ADC"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     for (byte i = 0; i < ANALOGIN_COUNT; i++) {
       char index[5];
       itoa (i + 1, index, 10);
       strcat(index, ":");
-      if (i < 3) printLCD(i, 0, index);
-      else printLCD(i - 3, 10, index);
+      if (i < 3) LCD.print(i, 0, index);
+      else LCD.print(i - 3, 10, index);
     }
   } else if (screen == SCREEN_TIMER) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : Timer"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(3, 0, PSTR("Test   /  : Timer"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     if (screenLock) {
       for(byte count = 11; count > 0; count--) {
         char timerNum[3];
-        printLCDLPad(1, 9, itoa(count - 1, timerNum, 10), 2, '0');
-        updateLCD();
+        LCD.lPad(1, 9, itoa(count - 1, timerNum, 10), 2, '0');
+        LCD.update();
         delay(1000);
       }
     }
   } else if (screen == SCREEN_MANUALPV) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : Manual"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(3, 0, PSTR("Test   /  : Manual"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     
     if (screenLock) {
       byte encMax = 1;
@@ -377,25 +377,25 @@ void screenInit(byte screen) {
     }
   } else if (screen == SCREEN_TRIGGERS) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : Digital Ins"));
-    printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.print_P(3, 0, PSTR("Test   /  : Digital Ins"));
+    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
 #ifdef DIGITAL_INPUTS
     for (byte i = 0; i < DIGITALIN_COUNT; i++) {
       char index[10];
       itoa (i + 1, index, 10);
       strcat(index, ": WAIT");
-      if (i < 3) printLCD(i, 0, index);
-      else printLCD(i - 3, 10, index);
+      if (i < 3) LCD.print(i, 0, index);
+      else LCD.print(i - 3, 10, index);
     }
     for (byte i = 0; i < DIGITALIN_COUNT; i++) { triggers[i] = 0; }
 #endif
   } else if (screen == SCREEN_COMPLETE) {
-    printLCD_P(3, 0, PSTR("Tests Complete."));
+    LCD.print_P(3, 0, PSTR("Tests Complete."));
   }
 
   //Write Unlock symbol to upper right corner
-  if (!screenLock) lcdWriteCustChar(0, 19, 7);
+  if (!screenLock) LCD.writeCustChar(0, 19, 7);
 }
 
 byte lastAddr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -414,7 +414,7 @@ void screenRefresh(byte screen) {
       char addrHex[3];
       memset(addr,0,8);
       getDSAddr(addr);
-      for (byte i=0; i<8; i++) printLCDLPad(1,i*2+2,itoa(addr[i], addrHex, 16), 2, '0');  
+      for (byte i=0; i<8; i++) LCD.lPad(1,i*2+2,itoa(addr[i], addrHex, 16), 2, '0');  
       char tText[7] = {""};
       if (memcmp(addr, lastAddr, 8)) {
         //Toss first read
@@ -433,7 +433,7 @@ void screenRefresh(byte screen) {
           Serial.println("F");
         }
       }
-      printLCDLPad(2, 7, tText, 6, ' ');
+      LCD.lPad(2, 7, tText, 6, ' ');
       convertAll();
       convertTime = millis();
     }
@@ -443,8 +443,8 @@ void screenRefresh(byte screen) {
         char value[4];
         unsigned int v = 50 * (unsigned int) analogRead(analogPinNum[i]) / 1024 ;
         vftoa(v, value, 1);
-        if (i < 3) printLCDLPad(i, 3, value, 3, ' ');
-        else printLCDLPad(i - 3, 13, value, 3, ' ');
+        if (i < 3) LCD.lPad(i, 3, value, 3, ' ');
+        else LCD.lPad(i - 3, 13, value, 3, ' ');
       }
       lastRead = millis();
     }  
@@ -462,8 +462,8 @@ void screenRefresh(byte screen) {
       char value[5];
       if (triggers[i]) strcpy (value, "TRIG");
       else strcpy (value, "WAIT");
-      if (i < 3) printLCD(i, 3, value);
-      else printLCD(i - 3, 13, value);
+      if (i < 3) LCD.print(i, 3, value);
+      else LCD.print(i - 3, 13, value);
     }
     #endif
   } else if (screen == SCREEN_COMPLETE) {
@@ -505,12 +505,12 @@ void screenEnter(byte screen) {
     Encoder.setCount(0);
     Encoder.setMax(3);
     
-    clearLCD();
-    printLCD_P(0,0,PSTR("Adjust LCD"));
-    printLCD_P(1, 1, PSTR("Brightness:"));
-    printLCD_P(2, 3, PSTR("Contrast:"));
-    printLCD_P(3, 1, PSTR("Cancel"));
-    printLCD_P(3, 15, PSTR("Save"));
+    LCD.clear();
+    LCD.print_P(0,0,PSTR("Adjust LCD"));
+    LCD.print_P(1, 1, PSTR("Brightness:"));
+    LCD.print_P(2, 3, PSTR("Contrast:"));
+    LCD.print_P(3, 1, PSTR("Cancel"));
+    LCD.print_P(3, 15, PSTR("Save"));
     byte bright = i2cGetBright();
     byte contrast = i2cGetContrast();
     byte origBright = bright;
@@ -534,31 +534,31 @@ void screenEnter(byte screen) {
           }
         } else {
           cursorPos = encValue;
-          printLCD_P(1, 12, PSTR(" "));
-          printLCD_P(1, 16, PSTR(" "));
-          printLCD_P(2, 12, PSTR(" "));
-          printLCD_P(2, 16, PSTR(" "));
-          printLCD_P(3, 0, PSTR(" "));
-          printLCD_P(3, 7, PSTR(" "));
-          printLCD_P(3, 14, PSTR(" "));
-          printLCD_P(3, 19, PSTR(" "));
+          LCD.print_P(1, 12, PSTR(" "));
+          LCD.print_P(1, 16, PSTR(" "));
+          LCD.print_P(2, 12, PSTR(" "));
+          LCD.print_P(2, 16, PSTR(" "));
+          LCD.print_P(3, 0, PSTR(" "));
+          LCD.print_P(3, 7, PSTR(" "));
+          LCD.print_P(3, 14, PSTR(" "));
+          LCD.print_P(3, 19, PSTR(" "));
           if (cursorPos == 0) {
-            printLCD_P(1, 12, PSTR(">"));
-            printLCD_P(1, 16, PSTR("<"));
+            LCD.print_P(1, 12, PSTR(">"));
+            LCD.print_P(1, 16, PSTR("<"));
           } else if (cursorPos == 1) {
-            printLCD_P(2, 12, PSTR(">"));
-            printLCD_P(2, 16, PSTR("<"));
+            LCD.print_P(2, 12, PSTR(">"));
+            LCD.print_P(2, 16, PSTR("<"));
           } else if (cursorPos == 2) {
-            printLCD_P(3, 0, PSTR(">"));
-            printLCD_P(3, 7, PSTR("<"));
+            LCD.print_P(3, 0, PSTR(">"));
+            LCD.print_P(3, 7, PSTR("<"));
           } else if (cursorPos == 3) {
-            printLCD_P(3, 14, PSTR(">"));
-            printLCD_P(3, 19, PSTR("<"));
+            LCD.print_P(3, 14, PSTR(">"));
+            LCD.print_P(3, 19, PSTR("<"));
           }
         }
         char value[4];
-        printLCDLPad(1, 13, itoa(bright, value, 10), 3, ' ');
-        printLCDLPad(2, 13, itoa(contrast, value, 10), 3, ' ');
+        LCD.lPad(1, 13, itoa(bright, value, 10), 3, ' ');
+        LCD.lPad(2, 13, itoa(contrast, value, 10), 3, ' ');
       }
       if (Encoder.ok()) {
         if (cursorPos == 2) {
@@ -601,8 +601,8 @@ byte scrollMenu(char sTitle[], menu *objMenu) {
     if (encValue >= 0) {
       objMenu->setSelected(Encoder.getCount());
       if (objMenu->refreshDisp() || redraw) drawMenu(sTitle, objMenu);
-      for (byte i = 0; i < 3; i++) printLCD(i + 1, 0, " ");
-      printLCD(objMenu->getCursor() + 1, 0, ">");
+      for (byte i = 0; i < 3; i++) LCD.print(i + 1, 0, " ");
+      LCD.print(objMenu->getCursor() + 1, 0, ">");
     }
     redraw = 0;
     //If Enter
@@ -617,12 +617,12 @@ byte scrollMenu(char sTitle[], menu *objMenu) {
 
 void drawMenu(char sTitle[], menu *objMenu) {
   char row[21];
-  clearLCD();
-  if (sTitle != NULL) printLCD(0, 0, sTitle);
+  LCD.clear();
+  if (sTitle != NULL) LCD.print(0, 0, sTitle);
 
   for (byte i = 0; i < 3; i++) {
     objMenu->getVisibleRow(i, row);
-    printLCD(i + 1, 1, row);
+    LCD.print(i + 1, 1, row);
   }
-  printLCD(objMenu->getCursor() + 1, 0, ">");
+  LCD.print(objMenu->getCursor() + 1, 0, ">");
 }

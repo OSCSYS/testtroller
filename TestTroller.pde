@@ -1,4 +1,4 @@
-#define BUILD 914
+#define BUILD 915
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -37,6 +37,7 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #include "HWProfile.h"
 #include <Wire.h>
 #include <menu.h>
+#include "UI_LCD.h"
 
 //**********************************************************************************
 // Compile Time Logic
@@ -53,6 +54,19 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
   pin gpioPin[OUT_GPIO_COUNT];
 #endif
 
+//Create the appropriate 'LCD' object for the hardware configuration (4-Bit GPIO, I2C)
+#if defined UI_LCD_4BIT
+  #include <LiquidCrystalFP.h>
+  
+  #ifndef UI_DISPLAY_SETUP
+    LCD4Bit LCD(LCD_RS_PIN, LCD_ENABLE_PIN, LCD_DATA4_PIN, LCD_DATA5_PIN, LCD_DATA6_PIN, LCD_DATA7_PIN);
+  #else
+    LCD4Bit LCD(LCD_RS_PIN, LCD_ENABLE_PIN, LCD_DATA4_PIN, LCD_DATA5_PIN, LCD_DATA6_PIN, LCD_DATA7_PIN, LCD_BRIGHT_PIN, LCD_CONTRAST_PIN);
+  #endif
+  
+#elif defined UI_LCD_I2C
+  LCDI2C LCD(UI_LCD_I2CADDR);
+#endif
 
 #ifdef OUTPUT_MUX
     pin muxLatchPin, muxDataPin, muxClockPin, muxENPin;
@@ -120,7 +134,7 @@ void brewCore() {
   #ifdef HEARTBEAT
     heartbeat();
   #endif
-  updateLCD();
+  LCD.update();
 }
 
 #ifdef HEARTBEAT
