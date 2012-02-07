@@ -60,9 +60,9 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 #define SCREEN_OUTPUTS 3
 #define SCREEN_ONEWIRE 4
 #define SCREEN_VOLUME 5
-#define SCREEN_TIMER 6
+#define SCREEN_TRIGGERS 6
 #define SCREEN_MANUALPV 7
-#define SCREEN_TRIGGERS 8
+#define SCREEN_TIMER 8
 #define SCREEN_COMPLETE 9
 
 #define SCREEN_MIN SCREEN_HOME
@@ -270,17 +270,14 @@ void screenInit(byte screen) {
           delay(125);
         }
       #endif
+      Serial.println("Done with output UI init");
     }
   } else if (screen == SCREEN_ONEWIRE) {
-    char addrHex[3];
     char testNum[2];
+    printLCD_P(0, 0, PSTR("Found Address:"));
     printLCD_P(3, 0, PSTR("Test   /  : OneWire"));
     printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
     printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
-    
-    getDSAddr(addr);
-    printLCD_P(0, 0, PSTR("Found Address:"));
-    for (byte i=0; i<8; i++) printLCDLPad(1,i*2+2,itoa(addr[i], addrHex, 16), 2, '0');  
     
     #ifdef USEMETRIC
       printLCD_P(2, 13, PSTR("C"));
@@ -291,15 +288,15 @@ void screenInit(byte screen) {
     convertTime = millis();
   } else if (screen == SCREEN_VOLUME) {
     char testNum[2];
-    printLCD_P(3, 0, PSTR("Test   /  : Analog Ins"));
+    printLCD_P(3, 0, PSTR("Test   /  : ADC"));
     printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
     printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
     for (byte i = 0; i < ANALOGIN_COUNT; i++) {
       char index[5];
       itoa (i + 1, index, 10);
       strcat(index, ":");
-      if (i < 3) printLCD(i + 1, 0, index);
-      else printLCD(i - 2, 10, index);
+      if (i < 3) printLCD(i, 0, index);
+      else printLCD(i - 3, 10, index);
     }
   } else if (screen == SCREEN_TIMER) {
     char testNum[2];
@@ -372,7 +369,7 @@ void screenInit(byte screen) {
         #endif
         
         if (lastOption == 255) {
-          activeScreen = SCREEN_TRIGGERS;
+          activeScreen++;
           screenInit(activeScreen);
           return;
         }
@@ -383,15 +380,16 @@ void screenInit(byte screen) {
     printLCD_P(3, 0, PSTR("Test   /  : Digital Ins"));
     printLCDLPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
     printLCDLPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
-
+#ifdef DIGITAL_INPUTS
     for (byte i = 0; i < DIGITALIN_COUNT; i++) {
       char index[10];
       itoa (i + 1, index, 10);
       strcat(index, ": WAIT");
-      if (i < 3) printLCD(i + 1, 0, index);
-      else printLCD(i - 2, 10, index);
+      if (i < 3) printLCD(i, 0, index);
+      else printLCD(i - 3, 10, index);
     }
     for (byte i = 0; i < DIGITALIN_COUNT; i++) { triggers[i] = 0; }
+#endif
   } else if (screen == SCREEN_COMPLETE) {
     printLCD_P(3, 0, PSTR("Tests Complete."));
   }
@@ -399,6 +397,8 @@ void screenInit(byte screen) {
   //Write Unlock symbol to upper right corner
   if (!screenLock) lcdWriteCustChar(0, 19, 7);
 }
+
+byte lastAddr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 //**********************************************************************************
 // screenRefresh:  Refresh active screen
@@ -408,11 +408,31 @@ void screenRefresh(byte screen) {
   } else if (screen == SCREEN_LCD) {
   } else if (screen == SCREEN_EEPROM) {
   } else if (screen == SCREEN_OUTPUTS) {
+          Serial.println("Output UI refresh");
   } else if (screen == SCREEN_ONEWIRE) {
     if (millis() - convertTime > 750) {
-      char tText[7];
-      int temp = read_temp(addr);
-      vftoa(temp, tText, 2);
+      char addrHex[3];
+      memset(addr,0,8);
+      getDSAddr(addr);
+      for (byte i=0; i<8; i++) printLCDLPad(1,i*2+2,itoa(addr[i], addrHex, 16), 2, '0');  
+      char tText[7] = {""};
+      if (memcmp(addr, lastAddr, 8)) {
+        //Toss first read
+        memcpy(lastAddr, addr, 8);
+      } else {
+        int temp = read_temp(addr);
+        if (temp != -32768) {
+          vftoa(temp, tText, 2);
+          Serial.print("DS18B20\t");
+          for (byte i = 0; i < 8; i++) {
+            Serial.print(addr[i]>>4, HEX);
+            Serial.print(addr[i]&0x0F, HEX);
+          }
+          Serial.print("\t");
+          Serial.print(tText);
+          Serial.println("F");
+        }
+      }
       printLCDLPad(2, 7, tText, 6, ' ');
       convertAll();
       convertTime = millis();
@@ -423,8 +443,8 @@ void screenRefresh(byte screen) {
         char value[4];
         unsigned int v = 50 * (unsigned int) analogRead(analogPinNum[i]) / 1024 ;
         vftoa(v, value, 1);
-        if (i < 3) printLCDLPad(i + 1, 3, value, 3, ' ');
-        else printLCDLPad(i - 2, 13, value, 3, ' ');
+        if (i < 3) printLCDLPad(i, 3, value, 3, ' ');
+        else printLCDLPad(i - 3, 13, value, 3, ' ');
       }
       lastRead = millis();
     }  
@@ -433,6 +453,7 @@ void screenRefresh(byte screen) {
   } else if (screen == SCREEN_MANUALPV) {
     
   } else if (screen == SCREEN_TRIGGERS) {
+    #ifdef DIGITAL_INPUTS
     if (millis() - trigReset > 3000) {
       for (byte i = 0; i < DIGITALIN_COUNT; i++) triggers[i] = 0;
       trigReset = millis();
@@ -441,9 +462,10 @@ void screenRefresh(byte screen) {
       char value[5];
       if (triggers[i]) strcpy (value, "TRIG");
       else strcpy (value, "WAIT");
-      if (i < 3) printLCD(i + 1, 3, value);
-      else printLCD(i - 2, 13, value);
+      if (i < 3) printLCD(i, 3, value);
+      else printLCD(i - 3, 13, value);
     }
+    #endif
   } else if (screen == SCREEN_COMPLETE) {
   }
 }
@@ -464,30 +486,11 @@ void screenEnter(byte screen) {
 	        adjustLCD();
         	unlockUI();
 	#endif
-      } else if (screen == SCREEN_LCD) {
-        activeScreen = SCREEN_EEPROM;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_EEPROM) {
-        activeScreen = SCREEN_OUTPUTS;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_OUTPUTS) {
-        activeScreen = SCREEN_ONEWIRE;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_ONEWIRE) {
-        activeScreen = SCREEN_VOLUME;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_VOLUME) {
-        activeScreen = SCREEN_TIMER;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_TIMER) {
-        activeScreen = SCREEN_MANUALPV;
-        screenInit(activeScreen);
-      } else if (screen == SCREEN_MANUALPV) {
-      } else if (screen == SCREEN_TRIGGERS) {        
-        activeScreen = SCREEN_COMPLETE;
-        screenInit(activeScreen);
       } else if (screen == SCREEN_COMPLETE) {
         unlockUI();
+      } else {
+        activeScreen++;
+        screenInit(activeScreen);
       }
     }
   }

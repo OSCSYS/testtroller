@@ -1,4 +1,4 @@
-#define BUILD 912
+#define BUILD 914
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -81,6 +81,8 @@ const char BTVER[] PROGMEM = "2.0";
 //**********************************************************************************
 
 void setup() {
+  Serial.begin(115200);
+  Serial.println("TestTroller");
   #if defined BTPD_SUPPORT || defined UI_I2C_LCD || defined TS_I2C_ONEWIRE
     Wire.begin();
   #endif

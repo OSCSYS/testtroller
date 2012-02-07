@@ -70,7 +70,7 @@ BrewTroller 4.0 Pro Hardware Configuration
 
 // TS_ONEWIRE_FASTREAD: Enables faster reads of temperatures by reading only the first
 // 2 bytes of temperature data and ignoring CRC check.
-#define TS_ONEWIRE_FASTREAD
+//#define TS_ONEWIRE_FASTREAD
 
 // DS2482_ADDR: I2C Address of DS2482 OneWire Master (used for TS_OneWire_I2C)
 // Should be 0x18, 0x19, 0x1A, 0x1B

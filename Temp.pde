@@ -133,10 +133,9 @@ Documentation, Forums and more information available at http://www.brewtroller.c
       }
       if (ds.crc8( data, 8) != data[8]) return -32768;
       tempOut = (data[1] << 8) + data[0];
-    
+
       if ( addr[0] == 0x10) tempOut = tempOut * 50; //9-bit DS18S20
       else tempOut = tempOut * 25 / 4; //12-bit DS18B20, etc.
-      
       #ifdef USEMETRIC
         return int(tempOut);  
       #else
@@ -148,32 +147,6 @@ Documentation, Forums and more information available at http://www.brewtroller.c
   void tempInit() {}
   void updateTemps() {}
   void getDSAddr(byte addrRet[8]){};
-#endif
-
-#if defined MASH_AVG
-void mashAvg() {
-  byte sensorCount = 1;
-  unsigned long avgTemp = temp[TS_MASH];
-  #if defined MASH_AVG_AUX1
-    if (temp[TS_AUX1] != -32768) {
-      avgTemp += temp[TS_AUX1];
-      sensorCount++;
-    }
-  #endif
-  #if defined MASH_AVG_AUX2
-    if (temp[TS_AUX2] != -32768) {
-      avgTemp += temp[TS_AUX2];
-      sensorCount++;
-    }
-  #endif
-  #if defined MASH_AVG_AUX3
-    if (temp[TS_AUX3] != -32768) {
-      avgTemp += temp[TS_AUX3];
-      sensorCount++;
-    }
-  #endif
-  temp[TS_MASH] = avgTemp / sensorCount;
-}
 #endif
 
 void convertAll() {
