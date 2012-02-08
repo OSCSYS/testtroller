@@ -40,7 +40,8 @@ BrewTroller 4.0 Lite Hardware Configuration
   #define UI_DISPLAY_SETUP
   #define LCD_BRIGHT_PIN 13
   #define LCD_CONTRAST_PIN 14
-
+  #define LCD_DEFAULT_CONTRAST 100
+  #define LCD_DEFAULT_BRIGHTNESS 255
   
 //**********************************************************************************
 // OneWire Temperature Sensor Options
@@ -69,10 +70,10 @@ BrewTroller 4.0 Lite Hardware Configuration
 
 // TS_ONEWIRE_FASTREAD: Enables faster reads of temperatures by reading only the first
 // 2 bytes of temperature data and ignoring CRC check.
-#define TS_ONEWIRE_FASTREAD
+//#define TS_ONEWIRE_FASTREAD
 
 // DS2482_ADDR: I2C Address of DS2482 OneWire Master (used for TS_OneWire_I2C)
-// Should be 0x18, 0x19, 0x1A, 0x1B
+// Should be one of: 0x18, 0x19, 0x1A, 0x1B
 #define DS2482_ADDR 0x1B
 //**********************************************************************************
 

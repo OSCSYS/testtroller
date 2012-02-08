@@ -1,4 +1,4 @@
-#define BUILD 915
+#define BUILD 916
 /*
    Copyright (C) 2009, 2010 Matt Reba, Jeremiah Dillingham
 
@@ -97,7 +97,8 @@ const char BTVER[] PROGMEM = "2.0";
 void setup() {
   Serial.begin(115200);
   Serial.println("TestTroller");
-  #if defined BTPD_SUPPORT || defined UI_I2C_LCD || defined TS_I2C_ONEWIRE
+  #if defined UI_I2C_LCD || defined TS_ONEWIRE_I2C
+    Serial.println("I2C\tBegin");
     Wire.begin();
   #endif
   
@@ -112,9 +113,7 @@ void setup() {
   tempInit();
   
   //User Interface Initialization (UI.pde)
-  #ifndef NOUI
-    uiInit();
-  #endif
+  uiInit();
 }
 
 
@@ -123,10 +122,7 @@ void setup() {
 //**********************************************************************************
 
 void loop() {
-  #ifndef NOUI
-    uiCore(); //Core UI Code (UI.pde). Note: updateLCD() called from brewCore()
-  #endif
-
+  uiCore(); //Core UI Code (UI.pde). Note: updateLCD() called from brewCore()
   brewCore();
 }
 

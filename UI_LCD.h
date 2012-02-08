@@ -225,10 +225,10 @@ Documentation, Forums and more information available at http://www.brewtroller.c
         byte bright, contrast;
 
         #if defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
-          void saveLCDBright(byte val) { EEPROM.write(2048, val); }
-          void saveLCDContrast(byte val) { EEPROM.write(2049, val); }
-          byte loadLCDBright() { return EEPROM.read(2048); }
-          byte loadLCDContrast() { return EEPROM.read(2049); }
+          void saveLCDBright(byte val) {  }
+          void saveLCDContrast(byte val) {  }
+          byte loadLCDBright() { return LCD_DEFAULT_BRIGHTNESS; }
+          byte loadLCDContrast() { return LCD_DEFAULT_CONTRAST; }
         #else
           //Fake It: 644P Only Supports 0-2047
           void saveLCDBright(byte val) {  }

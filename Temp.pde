@@ -39,7 +39,8 @@ Documentation, Forums and more information available at http://www.brewtroller.c
   
   void tempInit() {
     #ifdef TS_ONEWIRE_I2C
-      ds.configure(DS2482_CONFIG_APU | DS2482_CONFIG_SPU);
+      if (ds.configure(DS2482_CONFIG_APU | DS2482_CONFIG_SPU)) Serial.println("DS2482\tConfigured");
+      else Serial.println("DS2482\tConfigure Failed");
     #endif
     ds.reset();
     ds.skip();

@@ -482,7 +482,7 @@ void screenEnter(byte screen) {
     if (!screenLock) lockUI();
     else {
       if (screen == SCREEN_HOME) {
-	#ifdef UI_LCD_I2C
+	#ifdef UI_DISPLAY_SETUP
 	        adjustLCD();
         	unlockUI();
 	#endif
@@ -496,7 +496,7 @@ void screenEnter(byte screen) {
   }
 }
 
-#ifdef UI_LCD_I2C
+#ifdef UI_DISPLAY_SETUP
   void adjustLCD() {
     byte cursorPos = 0; //0 = brightness, 1 = contrast, 2 = cancel, 3 = save
     boolean cursorState = 0; //0 = Unselected, 1 = Selected
@@ -511,8 +511,8 @@ void screenEnter(byte screen) {
     LCD.print_P(2, 3, PSTR("Contrast:"));
     LCD.print_P(3, 1, PSTR("Cancel"));
     LCD.print_P(3, 15, PSTR("Save"));
-    byte bright = i2cGetBright();
-    byte contrast = i2cGetContrast();
+    byte bright = LCD.getBright();
+    byte contrast = LCD.getContrast();
     byte origBright = bright;
     byte origContrast = contrast;
     boolean redraw = 1;
@@ -527,10 +527,10 @@ void screenEnter(byte screen) {
         if (cursorState) {
           if (cursorPos == 0) { 
             bright = encValue;
-            i2cSetBright(bright);
+            LCD.setBright(bright);
           } else if (cursorPos == 1) {
             contrast = encValue;
-            i2cSetContrast(contrast);
+            LCD.setContrast(contrast);
           }
         } else {
           cursorPos = encValue;
@@ -556,18 +556,18 @@ void screenEnter(byte screen) {
             LCD.print_P(3, 19, PSTR("<"));
           }
         }
-        char value[4];
-        LCD.lPad(1, 13, itoa(bright, value, 10), 3, ' ');
-        LCD.lPad(2, 13, itoa(contrast, value, 10), 3, ' ');
+        char buf[4];
+        LCD.lPad(1, 13, itoa(bright, buf, 10), 3, ' ');
+        LCD.lPad(2, 13, itoa(contrast, buf, 10), 3, ' ');
       }
       if (Encoder.ok()) {
         if (cursorPos == 2) {
-          i2cSetBright(origBright);
-          i2cSetContrast(origContrast);
+          LCD.setBright(origBright);
+          LCD.setContrast(origContrast);
           return;
         }
         else if (cursorPos == 3) {
-          i2cSaveConfig();
+          LCD.saveConfig();
           return;
         }
         cursorState = cursorState ^ 1;
@@ -585,7 +585,7 @@ void screenEnter(byte screen) {
       brewCore();
     }
   }
-#endif
+#endif //#ifdef UI_DISPLAY_SETUP
 
 byte scrollMenu(char sTitle[], menu *objMenu) {
   Encoder.setMin(0);
