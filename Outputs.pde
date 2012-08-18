@@ -47,13 +47,6 @@ void pinInit() {
   #ifdef HEARTBEAT
     hbPin.setup(HEARTBEAT_PIN, OUTPUT);
   #endif
-  
-  #ifdef DIGITAL_INPUTS
-    {
-      byte gpioPinNums[DIGITALIN_COUNT] = DIGITALIN_PINS;
-      for (byte i = 0; i < DIGITALIN_COUNT; i++) digitalInPin[i].setup(gpioPinNums[i], INPUT);
-    }
-  #endif
 }
 
 #ifdef OUTPUT_MUX

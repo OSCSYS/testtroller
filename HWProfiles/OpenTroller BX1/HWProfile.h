@@ -24,7 +24,7 @@ BrewTroller 4.0 Lite Hardware Configuration
   
   #define ANALOG_INPUTS
   #define ANALOGIN_COUNT 4
-  #define ANALOGIN_PINS {3, 2, 1, 0}
+  #define ANALOGIN_PINS {7, 6, 5, 4}
 
   #define HEARTBEAT
   #define HEARTBEAT_PIN 0

@@ -29,8 +29,8 @@ OpenTroller DX1 TestTroller Hardware Configuration
 */
 
   #define DIGITAL_INPUTS
-  #define DIGITALIN_COUNT 4
-  #define DIGITALIN_PINS {21, 20, 19, 18}
+  #define DIGITALIN_COUNT 5
+  #define DIGITALIN_PINS {22, 21, 20, 19, 18}
   
   #define ANALOG_INPUTS
   #define ANALOGIN_COUNT 4
