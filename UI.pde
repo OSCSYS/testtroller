@@ -54,19 +54,16 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 //**********************************************************************************
 // UI Definitions
 //**********************************************************************************
-#define SCREEN_HOME 0
-#define SCREEN_LCD 1
-#define SCREEN_EEPROM 2
-#define SCREEN_OUTPUTS 3
-#define SCREEN_ONEWIRE 4
-#define SCREEN_VOLUME 5
-#define SCREEN_TRIGGERS 6
-#define SCREEN_MANUALPV 7
-#define SCREEN_TIMER 8
-#define SCREEN_COMPLETE 9
-
-#define SCREEN_MIN SCREEN_HOME
-#define SCREEN_MAX SCREEN_COMPLETE
+typedef enum {
+  SCREEN_HOME,
+  SCREEN_OUTPUTS,
+  SCREEN_ONEWIRE,
+  SCREEN_VOLUME,
+  SCREEN_TRIGGERS,
+  SCREEN_TIMER,
+  SCREEN_COMPLETE,
+  NUM_SCREENS
+} ScreenID;
 
 //**********************************************************************************
 // UI Custom LCD Chars
@@ -121,7 +118,7 @@ void uiInit() {
      Encoder.begin(ENCODER_I2CADDR);
   #endif
   
-  activeScreen = SCREEN_MIN;
+  activeScreen = 0;
   screenInit(activeScreen);
   unlockUI();
 }
@@ -130,8 +127,8 @@ void uiInit() {
 // unlockUI:  Unlock active screen to select another
 //**********************************************************************************
 void unlockUI() {
-  Encoder.setMin(SCREEN_MIN);
-  Encoder.setMax(SCREEN_MAX);
+  Encoder.setMin(0);
+  Encoder.setMax(NUM_SCREENS - 1);
   Encoder.setCount(activeScreen);
   screenLock = 0;
   //Reinit screen to show unlock icon hide parts not visible while locked
@@ -182,64 +179,11 @@ void screenInit(byte screen) {
     LCD.print_P(2, 4, PSTR("Build"));
     LCD.lPad(2, 10, itoa(BUILD, buildNum, 10), 4, '0');
     LCD.print_P(3, 0, PSTR("www.brewtroller.com"));
-  } else if (screen == SCREEN_LCD) {
-    char testNum[2];
-    //Screen Init: Home
-    LCD.setCustChar_P(0, BMP0);
-    LCD.setCustChar_P(1, BMP1);
-    LCD.setCustChar_P(2, BMP2);
-    LCD.setCustChar_P(3, BMP3);
-    LCD.setCustChar_P(4, BMP4);
-    LCD.setCustChar_P(5, BMP5);
-    LCD.setCustChar_P(6, BMP6);
-    LCD.print_P(3, 0, PSTR("Test   /  : LCD"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
-  
-    for (byte pos = 0; pos < 3; pos++) LCD.print_P(pos, 0, PSTR(">"));
-    for (byte pos = 0; pos < 3; pos++) LCD.print_P(pos, 19, PSTR("<"));
-    for (byte pos = 1; pos < 19; pos = pos + 3) {
-      LCD.writeCustChar(0, pos + 1, 0);
-      LCD.writeCustChar(0, pos + 2, 1);
-      LCD.writeCustChar(1, pos, 2); 
-      LCD.writeCustChar(1, pos + 1, 3); 
-      LCD.writeCustChar(1, pos + 2, 255); 
-      LCD.writeCustChar(2, pos, 4); 
-      LCD.writeCustChar(2, pos + 1, 5); 
-      LCD.writeCustChar(2, pos + 2, 6); 
-    }
-  } else if (screen == SCREEN_EEPROM) {
-    char testNum[2];
-    LCD.setCustChar_P(0, CHK);
-    LCD.print_P(3, 0, PSTR("Test   /  : EEPROM"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
-    
-    if (screenLock) {
-      for (byte block = 0; block < 16; block++) {
-        LCD.print_P(1, block + 2, PSTR("W"));
-        LCD.update();
-        for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, pos);
-        LCD.print_P(1, block + 2, PSTR("V"));
-        LCD.update();
-        boolean failed = 0;
-        for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) {
-          if (EEPROM.read(block * EEPROM_BLOCK_SIZE + pos) != pos){
-            failed = 1;
-            break;
-          }
-          EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, 0);
-        }
-        if (failed) LCD.print_P(1, block + 2, PSTR("X"));
-        else LCD.writeCustChar(1, block + 2, 0);
-        LCD.update();
-      }
-    }
   } else if (screen == SCREEN_OUTPUTS) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : Outputs"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
     
     if (screenLock) {
       #ifdef OUTPUT_GPIO
@@ -276,8 +220,8 @@ void screenInit(byte screen) {
     char testNum[2];
     LCD.print_P(0, 0, PSTR("Found Address:"));
     LCD.print_P(3, 0, PSTR("Test   /  : OneWire"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
     
     #ifdef USEMETRIC
       LCD.print_P(2, 13, PSTR("C"));
@@ -289,8 +233,8 @@ void screenInit(byte screen) {
   } else if (screen == SCREEN_VOLUME) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : ADC"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
     for (byte i = 0; i < ANALOGIN_COUNT; i++) {
       char index[5];
       itoa (i + 1, index, 10);
@@ -301,8 +245,8 @@ void screenInit(byte screen) {
   } else if (screen == SCREEN_TIMER) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : Timer"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
     if (screenLock) {
       for(byte count = 11; count > 0; count--) {
         char timerNum[3];
@@ -311,75 +255,11 @@ void screenInit(byte screen) {
         delay(1000);
       }
     }
-  } else if (screen == SCREEN_MANUALPV) {
-    char testNum[2];
-    LCD.print_P(3, 0, PSTR("Test   /  : Manual"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
-    
-    if (screenLock) {
-      byte encMax = 1;
-      #ifdef OUTPUT_GPIO
-        encMax += OUT_GPIO_COUNT;
-      #endif
-      #ifdef OUTPUT_MUX
-        encMax += OUT_MUX_COUNT;
-      #endif
-      
-      Encoder.setMin(0);
-      Encoder.setMax(encMax);
-    
-      menu outMenu(3, encMax);
-      
-      while(1) {
-        byte menuNum = 0;
-        outMenu.setItem_P(PSTR("Exit"), 255);
-
-        #ifdef OUTPUT_GPIO
-          for (byte i = 0; i < OUT_GPIO_COUNT; i++) {
-            char index[4];
-            outMenu.setItem("GPIO Output ", menuNum);
-            outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
-            if (gpioPin[i].get()) outMenu.appendItem(": On", menuNum);
-            else outMenu.appendItem(": Off", menuNum);
-            menuNum++;
-          }
-        #endif
-        #ifdef OUTPUT_MUX
-          for (byte i = 0; i < OUT_MUX_COUNT; i++) {
-            char index[4];
-            outMenu.setItem("MUX Output ", menuNum);
-            outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
-            if (vlvBits & ((unsigned long) 1 << i)) outMenu.appendItem(": On", menuNum);
-            else outMenu.appendItem(": Off", menuNum);
-            menuNum++;
-          }
-        #endif
-        byte lastOption = scrollMenu("Manual Output Test", &outMenu);
-
-        #ifdef OUTPUT_GPIO
-          if (lastOption < OUT_GPIO_COUNT) gpioPin[lastOption].toggle();
-          #ifdef OUTPUT_MUX
-            else if (lastOption >= OUT_GPIO_COUNT && lastOption < OUT_GPIO_COUNT + OUT_MUX_COUNT) setMUX(vlvBits ^ ((unsigned long) 1 << (lastOption - OUT_GPIO_COUNT)));
-          #endif
-        #else
-          #ifdef OUTPUT_MUX
-            if (lastOption < OUT_MUX_COUNT) setMUX(vlvBits ^ ((unsigned long) 1 << (lastOption - OUT_GPIO_COUNT)));
-          #endif        
-        #endif
-        
-        if (lastOption == 255) {
-          activeScreen++;
-          screenInit(activeScreen);
-          return;
-        }
-      }
-    }
   } else if (screen == SCREEN_TRIGGERS) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : Digital Ins"));
-    LCD.lPad(3, 5, itoa(screen + 1, testNum, 10), 2, '0');
-    LCD.lPad(3, 8, itoa(SCREEN_MAX, testNum, 10), 2, '0');
+    LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
+    LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
 #ifdef DIGITAL_INPUTS
     for (byte i = 0; i < DIGITALIN_COUNT; i++) {
       char index[10];
@@ -405,8 +285,6 @@ byte lastAddr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 //**********************************************************************************
 void screenRefresh(byte screen) {
   if (screen == SCREEN_HOME) {
-  } else if (screen == SCREEN_LCD) {
-  } else if (screen == SCREEN_EEPROM) {
   } else if (screen == SCREEN_OUTPUTS) {
           Serial.println("Output UI refresh");
   } else if (screen == SCREEN_ONEWIRE) {
@@ -449,9 +327,6 @@ void screenRefresh(byte screen) {
       lastRead = millis();
     }  
   } else if (screen == SCREEN_TIMER) {
-    
-  } else if (screen == SCREEN_MANUALPV) {
-    
   } else if (screen == SCREEN_TRIGGERS) {
     #ifdef DIGITAL_INPUTS
     if (millis() - trigReset > 3000) {
@@ -482,10 +357,25 @@ void screenEnter(byte screen) {
     if (!screenLock) lockUI();
     else {
       if (screen == SCREEN_HOME) {
-	#ifdef UI_DISPLAY_SETUP
-	        adjustLCD();
-        	unlockUI();
-	#endif
+        while (1) {
+          menu mainMenu(3, 4);
+          #ifdef UI_DISPLAY_SETUP
+            mainMenu.setItem("Display Setup", 0);
+          #endif        
+          mainMenu.setItem("EEPROM Test", 1);
+          mainMenu.setItem("Manual PV Test", 2);
+           mainMenu.setItem("Exit", 255);
+          byte lastOption = scrollMenu("Main Menu", &mainMenu);
+          
+          if (lastOption == 0) {
+            #ifdef UI_DISPLAY_SETUP          
+  	    adjustLCD();
+            #endif
+          } else if (lastOption == 1) eepromTest();
+          else if (lastOption == 2) manualPVTest();
+          else break;
+        }
+        unlockUI();
       } else if (screen == SCREEN_COMPLETE) {
         unlockUI();
       } else {
@@ -625,4 +515,85 @@ void drawMenu(char sTitle[], menu *objMenu) {
     LCD.print(i + 1, 1, row);
   }
   LCD.print(objMenu->getCursor() + 1, 0, ">");
+}
+
+void eepromTest () {
+  LCD.clear();
+  LCD.print_P(0, 0, PSTR("EEPROM Test"));
+  LCD.setCustChar_P(0, CHK);
+  for (byte block = 0; block < 16; block++) {
+    LCD.print_P(1, block + 2, PSTR("W"));
+    LCD.update();
+    for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, pos);
+    LCD.print_P(1, block + 2, PSTR("V"));
+    LCD.update();
+    boolean failed = 0;
+    for (int pos = 0; pos < EEPROM_BLOCK_SIZE; pos++) {
+      if (EEPROM.read(block * EEPROM_BLOCK_SIZE + pos) != pos){
+        failed = 1;
+        break;
+      }
+      EEPROM.write(block * EEPROM_BLOCK_SIZE + pos, 0);
+    }
+    if (failed) LCD.print_P(1, block + 2, PSTR("X"));
+    else LCD.writeCustChar(1, block + 2, 0);
+    LCD.update();
+  }
+  LCD.print_P(3, 0, PSTR("[Continue]"));
+  while (!Encoder.ok()) { brewCore(); }
+}
+
+void manualPVTest() {
+  LCD.clear();
+  LCD.print_P(3, 0, PSTR("Manual PV Test"));
+  
+  byte encMax = 1;
+  #ifdef OUTPUT_GPIO
+    encMax += OUT_GPIO_COUNT;
+  #endif
+  #ifdef OUTPUT_MUX
+    encMax += OUT_MUX_COUNT;
+  #endif
+  
+  menu outMenu(3, encMax);
+  
+  while(1) {
+    byte menuNum = 0;
+    outMenu.setItem_P(PSTR("Exit"), 255);
+
+    #ifdef OUTPUT_GPIO
+      for (byte i = 0; i < OUT_GPIO_COUNT; i++) {
+        char index[4];
+        outMenu.setItem("GPIO Output ", menuNum);
+        outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
+        if (gpioPin[i].get()) outMenu.appendItem(": On", menuNum);
+        else outMenu.appendItem(": Off", menuNum);
+        menuNum++;
+      }
+    #endif
+    #ifdef OUTPUT_MUX
+      for (byte i = 0; i < OUT_MUX_COUNT; i++) {
+        char index[4];
+        outMenu.setItem("MUX Output ", menuNum);
+        outMenu.appendItem(itoa(i + 1, index, 10), menuNum);
+        if (vlvBits & ((unsigned long) 1 << i)) outMenu.appendItem(": On", menuNum);
+        else outMenu.appendItem(": Off", menuNum);
+        menuNum++;
+      }
+    #endif
+    byte lastOption = scrollMenu("Manual Output Test", &outMenu);
+
+    #ifdef OUTPUT_GPIO
+      if (lastOption < OUT_GPIO_COUNT) gpioPin[lastOption].toggle();
+      #ifdef OUTPUT_MUX
+        else if (lastOption >= OUT_GPIO_COUNT && lastOption < OUT_GPIO_COUNT + OUT_MUX_COUNT) setMUX(vlvBits ^ ((unsigned long) 1 << (lastOption - OUT_GPIO_COUNT)));
+      #endif
+    #else
+      #ifdef OUTPUT_MUX
+        if (lastOption < OUT_MUX_COUNT) setMUX(vlvBits ^ ((unsigned long) 1 << (lastOption - OUT_GPIO_COUNT)));
+      #endif        
+    #endif
+    
+    if (lastOption == 255) return;
+  }
 }
