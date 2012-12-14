@@ -4,6 +4,17 @@ BrewTroller 1.0 - 2.1 Hardware Configuration
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
+
+  //**********************************************************************************
+  // ENCODER TYPE
+  //**********************************************************************************
+  // You must uncomment one and only one of the following ENCODER_ definitions
+  // Use ENCODER_ALPS for ALPS and Panasonic Encoders
+  // Use ENCODER_CUI for older CUI encoders
+  //
+  #define ENCODER_TYPE ALPS
+  //#define ENCODER_TYPE CUI
+  //**********************************************************************************
   
   #define ENCODER_OLD_CONSTRUCTOR
   #define ENCA_PIN 2
