@@ -46,7 +46,7 @@ typedef enum {
 #ifdef ANALOG_INPUTS
   SCREEN_VOLUME,
 #endif
-#ifdef DITIAL_INPUTS
+#ifdef DIGITAL_INPUTS
   SCREEN_TRIGGERS,
 #endif
   SCREEN_TIMER,
