@@ -58,8 +58,12 @@ typedef enum {
   SCREEN_HOME,
   SCREEN_OUTPUTS,
   SCREEN_ONEWIRE,
+#ifdef ANALOG_INPUTS
   SCREEN_VOLUME,
+#endif
+#ifdef DITIAL_INPUTS
   SCREEN_TRIGGERS,
+#endif
   SCREEN_TIMER,
   SCREEN_COMPLETE,
   NUM_SCREENS
@@ -230,6 +234,7 @@ void screenInit(byte screen) {
     #endif
     convertAll();
     convertTime = millis();
+#ifdef ANALOG_INPUTS
   } else if (screen == SCREEN_VOLUME) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : ADC"));
@@ -242,6 +247,7 @@ void screenInit(byte screen) {
       if (i < 3) LCD.print(i, 0, index);
       else LCD.print(i - 3, 10, index);
     }
+#endif
   } else if (screen == SCREEN_TIMER) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : Timer"));
@@ -255,12 +261,12 @@ void screenInit(byte screen) {
         delay(1000);
       }
     }
+#ifdef DIGITAL_INPUTS
   } else if (screen == SCREEN_TRIGGERS) {
     char testNum[2];
     LCD.print_P(3, 0, PSTR("Test   /  : Digital Ins"));
     LCD.lPad(3, 5, itoa(screen, testNum, 10), 2, '0');
     LCD.lPad(3, 8, itoa(NUM_SCREENS - 2, testNum, 10), 2, '0');
-#ifdef DIGITAL_INPUTS
     for (byte i = 0; i < DIGITALIN_COUNT; i++) {
       char index[10];
       itoa (i + 1, index, 10);
@@ -315,6 +321,7 @@ void screenRefresh(byte screen) {
       convertAll();
       convertTime = millis();
     }
+#ifdef ANALOG_INPUTS
   } else if (screen == SCREEN_VOLUME) {
     if (millis() - lastRead > 500) {
       for (byte i = 0; i < ANALOGIN_COUNT; i++) {
@@ -326,9 +333,10 @@ void screenRefresh(byte screen) {
       }
       lastRead = millis();
     }  
+#endif
   } else if (screen == SCREEN_TIMER) {
+#ifdef DIGITAL_INPUTS
   } else if (screen == SCREEN_TRIGGERS) {
-    #ifdef DIGITAL_INPUTS
     if (millis() - trigReset > 3000) {
       for (byte i = 0; i < DIGITALIN_COUNT; i++) triggers[i] = 0;
       trigReset = millis();
@@ -340,7 +348,7 @@ void screenRefresh(byte screen) {
       if (i < 3) LCD.print(i, 3, value);
       else LCD.print(i - 3, 13, value);
     }
-    #endif
+#endif
   } else if (screen == SCREEN_COMPLETE) {
   }
 }

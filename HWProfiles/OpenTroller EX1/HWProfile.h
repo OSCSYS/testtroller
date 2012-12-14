@@ -4,8 +4,7 @@ OpenTroller EX1 Hardware Configuration
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
-  #include "Config.h"
-  
+    
   #define ENCA_PIN 3
   #define ENCB_PIN 2
   #define ENTER_PIN 1

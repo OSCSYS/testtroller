@@ -1,49 +1,36 @@
 /*
-OpenTroller DX1 TestTroller Hardware Configuration
+OpenTroller EX1 Hardware Configuration
 */
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
-
-  #define ENCODER_I2C
-  #define ENCODER_I2CADDR 0x01
-
+    
+  #define ENCA_PIN 3
+  #define ENCB_PIN 2
+  #define ENTER_PIN 1
+  #define ENCODER_ACTIVELOW
+  
   #define OUTPUT_GPIO
-  #define OUT_GPIO_COUNT 14 //14 Outputs
-  #define OUT_GPIO_PINS {28, 29, 30, 31, 7, 6, 3, 4, 12, 15, 14, 13, 1, 2}
-/*
-  28,	//OUT1
-  29,	//OUT2
-  30,	//OUT3
-  31,	//OUT4
-  7,	//OUT5
-  6,	//OUT6
-  3,	//OUT7
-  4,	//OUT8
-  12,	//OUT9
-  15,	//OUT10
-  14,	//OUT11
-  13,	//OUT12
-  1,	//OUT13
-  2	//OUT14
-*/
-
-  #define DIGITAL_INPUTS
-  #define DIGITALIN_COUNT 6
-  #define DIGITALIN_PINS {21, 20, 19, 18, 5, 22}
-  
-  #define ANALOG_INPUTS
-  #define ANALOGIN_COUNT 4
-  #define ANALOGIN_PINS {7, 6, 5, 4}
-  
-  #define UI_LCD_I2C
-  #define UI_LCD_I2CADDR 0x01
-  #define UI_DISPLAY_SETUP
-  #define LCD_DEFAULT_CONTRAST 100
-  #define LCD_DEFAULT_BRIGHTNESS 255
+  #define OUT_GPIO_COUNT 7 //7 Outputs
+  #define OUT_GPIO_PINS {22, 21, 20, 19, 18, 15, 27}
   
   #define HEARTBEAT
   #define HEARTBEAT_PIN 0
+  
+  #define UI_LCD_4BIT
+  #define LCD_RS_PIN 4
+  #define LCD_ENABLE_PIN 23
+  #define LCD_DATA4_PIN 28
+  #define LCD_DATA5_PIN 29
+  #define LCD_DATA6_PIN 30
+  #define LCD_DATA7_PIN 31
+  
+  #define UI_DISPLAY_SETUP
+  #define LCD_BRIGHT_PIN 13
+  #define LCD_CONTRAST_PIN 14
+  #define LCD_DEFAULT_CONTRAST 100
+  #define LCD_DEFAULT_BRIGHTNESS 255
+  
 //**********************************************************************************
 // OneWire Temperature Sensor Options
 //**********************************************************************************
@@ -77,5 +64,8 @@ OpenTroller DX1 TestTroller Hardware Configuration
 // Should be 0x18, 0x19, 0x1A, 0x1B
 #define DS2482_ADDR 0x1B
 //**********************************************************************************
+
+#define RS485_MASTER
+#define RS485_RXTX_PIN 12
 
 #endif
