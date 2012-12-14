@@ -42,8 +42,8 @@ using OneWire Library (http://www.arduino.cc/playground/Learning/OneWire)
 // Use ENCODER_ALPS for ALPS and Panasonic Encoders
 // Use ENCODER_CUI for older CUI encoders
 //
-#define ENCODER_TYPE ALPS
-//#define ENCODER_TYPE CUI
+//#define ENCODER_TYPE ALPS
+#define ENCODER_TYPE CUI
 //**********************************************************************************
 
 //*****************************************************************************************************************************
@@ -117,6 +117,9 @@ void uiInit() {
       Encoder.begin(ENCODER_TYPE, ENTER_PIN, ENCA_PIN, ENCB_PIN);
     #else
       Encoder.begin(ENCODER_TYPE, ENTER_PIN, ENCA_PIN, ENCB_PIN, ENTER_INT, ENCA_INT);
+    #endif
+    #ifdef ENCODER_ACTIVELOW
+      Encoder.setActiveLow(1);
     #endif
   #else
      Encoder.begin(ENCODER_I2CADDR);
