@@ -1,30 +1,20 @@
 /*
-OpenTroller BX1 Hardware Configuration
+OpenTroller EX1 Hardware Configuration
 */
 
 #ifndef BT_HWPROFILE
 #define BT_HWPROFILE
+  #include "Config.h"
   
   #define ENCA_PIN 3
   #define ENCB_PIN 2
   #define ENTER_PIN 1
+  #define ENCODER_ACTIVELOW
   
   #define OUTPUT_GPIO
-  #define OUT_GPIO_COUNT 6 //6 Outputs
-  #define OUT_GPIO_PINS {22, 21, 20, 19, 18, 15}
-/*  
-  22, //OUT1
-  21, //OUT2
-  20, //OUT3
-  19, //OUT4
-  18, //OUT5
-  15 //OUT6
-*/
+  #define OUT_GPIO_COUNT 7 //7 Outputs
+  #define OUT_GPIO_PINS {22, 21, 20, 19, 18, 15, 27}
   
-  #define ANALOG_INPUTS
-  #define ANALOGIN_COUNT 4
-  #define ANALOGIN_PINS {7, 6, 5, 4}
-
   #define HEARTBEAT
   #define HEARTBEAT_PIN 0
   
