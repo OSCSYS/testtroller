@@ -24,7 +24,7 @@ OpenTroller EX1 Hardware Configuration
   
   #define OUTPUT_GPIO
   #define OUT_GPIO_COUNT 7 //7 Outputs
-  #define OUT_GPIO_PINS {22, 21, 20, 19, 18, 15, 27}
+  #define OUT_GPIO_PINS {22, 15, 21, 18, 20, 19, 27}
   
   #define HEARTBEAT
   #define HEARTBEAT_PIN 0
