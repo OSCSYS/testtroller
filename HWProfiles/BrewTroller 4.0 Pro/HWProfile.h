@@ -9,6 +9,17 @@ BrewTroller 4.0 Pro Hardware Configuration
   #define ENCB_PIN 4
   #define ENTER_PIN 5
   
+  //**********************************************************************************
+  // ENCODER TYPE
+  //**********************************************************************************
+  // You must uncomment one and only one of the following ENCODER_ definitions
+  // Use ENCODER_ALPS for ALPS and Panasonic Encoders
+  // Use ENCODER_CUI for older CUI encoders
+  //
+  #define ENCODER_TYPE ALPS
+  //#define ENCODER_TYPE CUI
+  //**********************************************************************************
+  
   #define OUTPUT_GPIO
   #define OUT_GPIO_COUNT 5 //15 Outputs
   #define OUT_GPIO_PINS {23, 1, 3, 7, 15}
